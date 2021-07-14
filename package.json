@@ -1,0 +1,21 @@
+{
+  "name": "@namespace-domains/contracts",
+  "version": "0.1.0",
+  "description": "Namespace smart contracts",
+  "author": "Vedran Bidin <vedran@bidin.me> (http://bidin.me)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vbidin/namespace-contracts.git"
+  },
+  "keywords": [
+    "Namespace",
+    "Ethereum",
+    "Solidity",
+    "domains"
+  ],
+  "directories": {
+    "src": "./src",
+    "test": "./test"
+  }
+}
