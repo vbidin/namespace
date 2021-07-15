@@ -5,6 +5,6 @@
     "esModuleInterop": true,
     "strict": true
   },
-  "include": ["./test"],
+  "include": ["./test/*"],
   "files": ["./hardhat.config.ts"]
 }
