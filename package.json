@@ -29,6 +29,8 @@
     "ethers": "^5.0.0",
     "hardhat": "^2.4.3",
     "mocha": "^9.0.2",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.15",
     "ts-node": "^10.1.0",
     "typechain": "^5.1.1",
     "typescript": "^4.3.5"

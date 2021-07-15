@@ -1,17 +1,17 @@
-import "@nomiclabs/hardhat-ethers";
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-etherscan";
-import "@typechain/hardhat";
+import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-waffle';
+import '@nomiclabs/hardhat-etherscan';
+import '@typechain/hardhat';
 
 export default {
   networks: {
     hardhat: {
       accounts: {
-        count: 1
+        count: 1,
       },
       blockGasLimit: 15000000,
-      hardfork: "berlin"
-    }
+      hardfork: 'berlin',
+    },
   },
   solidity: {
     version: '0.8.4',
@@ -20,17 +20,17 @@ export default {
       optimizer: {
         enabled: true,
         runs: 4294967295,
-      }
-    }
+      },
+    },
   },
   paths: {
-    sources: "./src",
-    tests: "./test",
-    cache: "./cache",
-    artifacts: "./build"
+    sources: './src',
+    tests: './test',
+    cache: './cache',
+    artifacts: './build',
   },
   typechain: {
-    outDir: "build/types",
-    target: "ethers-v5"
-  }
-}
+    outDir: 'build/types',
+    target: 'ethers-v5',
+  },
+};
