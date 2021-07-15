@@ -1,3 +1,8 @@
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-etherscan";
+import "@typechain/hardhat";
+
 export default {
   networks: {
     hardhat: {
@@ -9,7 +14,7 @@ export default {
     }
   },
   solidity: {
-    version: '0.8.6',
+    version: '0.8.4',
     settings: {
       evmVersion: 'berlin',
       optimizer: {
@@ -23,5 +28,9 @@ export default {
     tests: "./test",
     cache: "./cache",
     artifacts: "./build"
+  },
+  typechain: {
+    outDir: "build/types",
+    target: "ethers-v5"
   }
 }
