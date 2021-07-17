@@ -33,10 +33,8 @@
     "ethereum-waffle": "^3.0.0",
     "ethers": "^5.0.0",
     "hardhat": "^2.4.3",
-    "hardhat-contract-sizer": "^2.0.3",
     "hardhat-docgen": "^1.1.1",
     "hardhat-gas-reporter": "^1.0.4",
-    "hardhat-spdx-license-identifier": "^2.0.3",
     "husky": "^7.0.0",
     "lint-staged": "^11.0.1",
     "mocha": "^9.0.2",
@@ -50,16 +48,12 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "build": "hardhat compile",
-    "clean": "rm -rf build cache",
-    "cover": "yarn build && hardhat coverage; mv coverage.json build",
-    "doc": "yarn build && hardhat docgen",
-    "gas": "REPORT_GAS=true yarn test",
-    "license": "hardhat prepend-spdx-license",
-    "lint": "lint-staged",
     "prepare": "husky install",
-    "size": "yarn build && hardhat size-contracts",
-    "test": "yarn build && hardhat test --no-compile",
-    "verify": "hardhat verify --network $(NETWORK) $(CONTRACT_ADDRESS)"
+    "lint": "lint-staged",
+    "build": "hardhat compile",
+    "test:unit": "hardhat compile && hardhat coverage; rm coverage.json",
+    "test:integration": "echo WIP",
+    "test:performance": "echo WIP",
+    "clean": "rm -rf build cache"
   }
 }

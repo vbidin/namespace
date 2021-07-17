@@ -4,8 +4,6 @@ import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
 import 'hardhat-docgen';
-import 'hardhat-contract-sizer';
-import 'hardhat-spdx-license-identifier';
 import 'solidity-coverage';
 
 export default {
@@ -39,31 +37,21 @@ export default {
     outDir: './build/types',
     target: 'ethers-v5',
   },
-  spdxLicenseIdentifier: {
-    overwrite: false,
-    runOnCompile: false,
-  },
   gasReporter: {
     enabled: process.env.REPORT_GAS,
     currency: 'USD',
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
-    gasPrice: 50,
-    outputFile: './build/gas.txt',
+    gasPrice: process.env.GAS_PRICE,
     noColors: true,
     onlyCalledMethods: false,
     src: './src',
-  },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
-  contractSizer: {
-    alphaSort: true,
-    runOnCompile: false,
-    disambiguatePaths: false,
   },
   docgen: {
     path: './build/docs',
     clear: true,
     runOnCompile: false,
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
