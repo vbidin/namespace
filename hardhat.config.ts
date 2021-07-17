@@ -4,6 +4,7 @@ import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
 import 'hardhat-spdx-license-identifier';
 import 'hardhat-gas-reporter';
+import 'hardhat-contract-sizer';
 import 'solidity-coverage';
 
 export default {
@@ -52,5 +53,10 @@ export default {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+  contractSizer: {
+    alphaSort: true,
+    runOnCompile: false,
+    disambiguatePaths: false,
   },
 };
