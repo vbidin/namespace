@@ -5,6 +5,7 @@ import '@typechain/hardhat';
 import 'hardhat-spdx-license-identifier';
 
 export default {
+  defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
       accounts: {
