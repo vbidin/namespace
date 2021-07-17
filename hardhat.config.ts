@@ -2,6 +2,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
+import 'hardhat-spdx-license-identifier';
 
 export default {
   networks: {
@@ -32,5 +33,9 @@ export default {
   typechain: {
     outDir: 'build/types',
     target: 'ethers-v5',
+  },
+  spdxLicenseIdentifier: {
+    overwrite: false,
+    runOnCompile: false,
   },
 };
