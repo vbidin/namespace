@@ -31,7 +31,7 @@ export default {
   },
   paths: {
     sources: './src',
-    tests: './test',
+    tests: './test/unit',
     cache: './cache',
     artifacts: './build',
   },
@@ -44,7 +44,7 @@ export default {
     runOnCompile: false,
   },
   gasReporter: {
-    enabled: process.env.TEST_GAS,
+    enabled: process.env.REPORT_GAS,
     currency: 'USD',
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     gasPrice: 50,

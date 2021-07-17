@@ -54,7 +54,7 @@
     "clean": "rm -rf build cache",
     "cover": "yarn build && hardhat coverage; mv coverage.json build",
     "doc": "yarn build && hardhat docgen",
-    "gas": "TEST_GAS=true yarn test",
+    "gas": "REPORT_GAS=true yarn test",
     "license": "hardhat prepend-spdx-license",
     "lint": "lint-staged",
     "prepare": "husky install",
