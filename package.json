@@ -51,13 +51,13 @@
   "scripts": {
     "build": "hardhat compile",
     "clean": "rm -rf build cache",
-    "cover": "hardhat coverage; rm coverage.json",
-    "gas": "TEST_GAS=true hardhat test",
+    "cover": "yarn build && hardhat coverage; mv coverage.json build",
+    "gas": "TEST_GAS=true yarn test",
     "license": "hardhat prepend-spdx-license",
     "lint": "lint-staged",
     "prepare": "husky install",
-    "size": "hardhat compile && hardhat size-contracts",
-    "test": "hardhat test",
+    "size": "yarn build && hardhat size-contracts",
+    "test": "yarn build && hardhat test --no-compile",
     "verify": "hardhat verify --network $(NETWORK) $(CONTRACT_ADDRESS)"
   }
 }
