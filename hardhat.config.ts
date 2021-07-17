@@ -42,12 +42,15 @@ export default {
     runOnCompile: false,
   },
   gasReporter: {
-    enabled: process.env.GAS,
+    enabled: process.env.TEST_GAS,
     currency: 'USD',
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     gasPrice: 50,
     noColors: false,
     onlyCalledMethods: false,
     src: './src',
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
