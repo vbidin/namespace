@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
 import 'hardhat-spdx-license-identifier';
+import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 
 export default {
@@ -33,11 +34,20 @@ export default {
     artifacts: './build',
   },
   typechain: {
-    outDir: 'build/types',
+    outDir: './build/types',
     target: 'ethers-v5',
   },
   spdxLicenseIdentifier: {
     overwrite: false,
     runOnCompile: false,
+  },
+  gasReporter: {
+    enabled: process.env.GAS,
+    currency: 'USD',
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    gasPrice: 50,
+    noColors: false,
+    onlyCalledMethods: false,
+    src: './src',
   },
 };
