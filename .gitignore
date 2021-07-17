@@ -1,4 +1,5 @@
 build/
 cache/
+coverage/
 flat/
 node_modules/

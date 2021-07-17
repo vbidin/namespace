@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
 import 'hardhat-spdx-license-identifier';
+import 'solidity-coverage';
 
 export default {
   defaultNetwork: 'hardhat',
