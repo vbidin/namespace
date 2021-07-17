@@ -2,9 +2,10 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
-import 'hardhat-spdx-license-identifier';
 import 'hardhat-gas-reporter';
+import 'hardhat-docgen';
 import 'hardhat-contract-sizer';
+import 'hardhat-spdx-license-identifier';
 import 'solidity-coverage';
 
 export default {
@@ -59,5 +60,10 @@ export default {
     alphaSort: true,
     runOnCompile: false,
     disambiguatePaths: false,
+  },
+  docgen: {
+    path: './build/docs',
+    clear: true,
+    runOnCompile: false,
   },
 };
