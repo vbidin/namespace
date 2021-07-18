@@ -1,2 +1,2 @@
 slither-analyzer
-manticore
+manticore[native]
