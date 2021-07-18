@@ -49,11 +49,9 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "lint": "lint-staged",
-    "build": "hardhat compile",
-    "test:unit": "hardhat compile && hardhat coverage; rm coverage.json",
-    "test:integration": "echo WIP",
-    "test:performance": "echo WIP",
-    "clean": "rm -rf build cache"
+    "lint": "lint-staged -c conf/lintstagedrc.json",
+    "build": "hardhat compile --config conf/hardhat.ts",
+    "test": "yarn build && hardhat test --config conf/hardhat.ts --no-compile",
+    "clean": "rm -rf build"
   }
 }
