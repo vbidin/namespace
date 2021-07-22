@@ -50,7 +50,7 @@ export default {
   docgen: {
     path: "build/docs",
     clear: true,
-    runOnCompile: false,
+    runOnCompile: true,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
