@@ -45,5 +45,5 @@ interface IDomainRegistry is IERC721 {
     /// @notice Checks if the `id` domain is a top-level domain.
     /// @param id The domain identifier.
     /// @return Whether the `id` domain is a top-level domain or not.
-    function isTld(uint256 id) external view returns (bool);
+    function isTopLevelDomain(uint256 id) external view returns (bool);
 }
