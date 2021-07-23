@@ -6,15 +6,22 @@ import "./standards/IERC721.sol";
 /// @title Interface of a registry of domain ownerships
 /// @notice Complies with the ERC-721 Non-Fungible Token Standard.
 interface IDomainRegistry is IERC721 {
+    /// @notice Registers a new top-level domain.
+    /// @dev Top-level domains are always public.
+    /// Emits a {Transfer} event.
+    /// Throws an exception if:
+    /// - `name` is an empty string, or contains a period.
+    /// - the top-level domain `name` already exists.
+    function register(string calldata name) external returns (uint256);
+
     /// @notice Registers a new domain.
-    /// @dev The new domain name is the concatenation of the `prefix`, the dot character, and the `id` domain name.
-    /// Top level domains can be created but can not be owned.
+    /// @dev The new domain name is the concatenation of the `prefix`, a period, and the `id` domain name.
     /// Emits a {Transfer} event.
     /// Throws an exception if:
     /// - `id` domain does not exist.
     /// - `msg.sender` does not own the `id` domain and the domain is not public.
-    /// - `prefix` is an empty string, or contains the dot character.
-    /// - the new domain name is already owned and has not expired or is public.
+    /// - `prefix` is an empty string, or contains a period.
+    /// - the new domain name is public or is already owned and has not expired
     /// @param id The domain identifier.
     /// @param prefix The string to concatenate to the domain.
     /// @return The new domain identifier.
@@ -33,17 +40,8 @@ interface IDomainRegistry is IERC721 {
     function idOf(string calldata name) external view returns (uint256);
 
     /// @notice Returns the symbolic name of the `id` domain.
+    /// @dev Throws an exception if the `id` domain has not been registered.
     /// @param id The domain identifier.
     /// @return The symbolic name of the `id` domain.
     function nameOf(uint256 id) external view returns (string memory);
-
-    /// @notice Checks if the `name` domain is registered.
-    /// @param name The domain name.
-    /// @return Whether the `name` domain is registered.
-    function isRegistered(string calldata name) external view returns (bool);
-
-    /// @notice Checks if the `id` domain is a top-level domain.
-    /// @param id The domain identifier.
-    /// @return Whether the `id` domain is a top-level domain or not.
-    function isTopLevelDomain(uint256 id) external view returns (bool);
 }
