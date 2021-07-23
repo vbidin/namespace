@@ -7,11 +7,11 @@
     "email": "vedran@bidin.me",
     "url": "http://bidin.me"
   },
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/vbidin/namespace-contracts.git"
   },
+  "license": "MIT",
   "keywords": [
     "namespace",
     "ethereum",
@@ -22,7 +22,10 @@
   },
   "scripts": {
     "prepare": "husky install conf",
-    "lint": "lint-staged -c conf/lintstagedrc.json",
+    "format": "prettier -c conf/prettier.json --ignore-path conf/prettierignore --write .",
+    "lint:solhint": "solhint -c conf/solhint.json 'src/**/*.sol'",
+    "lint:eslint": "eslint -c conf/eslint.json 'test/**/*.spec.ts'",
+    "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
     "build": "hardhat compile --config conf/hardhat.ts",
     "test": "yarn build && hardhat test --config conf/hardhat.ts --no-compile",
     "clean": "rm -rf build"
