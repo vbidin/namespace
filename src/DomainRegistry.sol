@@ -73,19 +73,8 @@ contract DomainRegistry is IDomainRegistry {
 
     constructor() {}
 
-    // RECEIVE
-
-    // FALLBACK
-
     /// @inheritdoc IDomainRegistry
-    function register(string calldata name)
-        external
-        override
-        returns (uint256)
-    {}
-
-    /// @inheritdoc IDomainRegistry
-    function register(uint256 id, string calldata prefix)
+    function register(uint256 id, string calldata prefix, bool public_)
         external
         override
         returns (uint256)
