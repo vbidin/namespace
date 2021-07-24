@@ -52,11 +52,11 @@ contract DomainRegistry is IDomainRegistry {
     constructor() {}
 
     /// @inheritdoc IDomainRegistry
-    function register(uint256 id, string calldata prefix, bool public_)
-        external
-        override
-        returns (uint256)
-    {}
+    function register(
+        uint256 id,
+        string calldata prefix,
+        bool public_
+    ) external override returns (uint256) {}
 
     /// @inheritdoc IDomainRegistry
     function refresh(uint256 id) external override {}
@@ -173,7 +173,7 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     function _exists(uint256 id) private view returns (bool) {
-        return bytes(_names[id]).length == 0;
+        return bytes(_names[id]).length != 0;
     }
 
     function _isOwner(uint256 id, address a) private view returns (bool) {
