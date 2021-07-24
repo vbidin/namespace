@@ -6,18 +6,6 @@ import "./interfaces/IDomainRegistry.sol";
 /// @title Implementation of a registry of domain ownerships
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract DomainRegistry is IDomainRegistry {
-    enum DomainType {
-        Root,
-        TopLevel,
-        Regular
-    }
-
-    struct Domain {
-        uint256 id;
-        address owner;
-        string name;
-    }
-
     mapping(string => uint256) private _ids;
 
     mapping(uint256 => address) private _owners;
@@ -32,16 +20,6 @@ contract DomainRegistry is IDomainRegistry {
 
     modifier exists(uint256 id) {
         require(_exists(id), "domain does not exist");
-        _;
-    }
-
-    modifier isTld(uint256 id) {
-        require(_isTld(id), "domain is not a top-level domain");
-        _;
-    }
-
-    modifier isNotTld(uint256 id) {
-        require(!_isTld(id), "domain is a top-level domain");
         _;
     }
 
@@ -110,7 +88,6 @@ contract DomainRegistry is IDomainRegistry {
         external
         override
         exists(id)
-        isNotTld(id)
         isNotOwner(id, approved)
     {}
 
@@ -179,7 +156,6 @@ contract DomainRegistry is IDomainRegistry {
         view
         override
         exists(id)
-        isNotTld(id)
         returns (address)
     {
         return _owners[id];
@@ -198,10 +174,6 @@ contract DomainRegistry is IDomainRegistry {
 
     function _exists(uint256 id) private view returns (bool) {
         return bytes(_names[id]).length == 0;
-    }
-
-    function _isTld(uint256 id) private view returns (bool) {
-        return _isZero(_owners[id]);
     }
 
     function _isOwner(uint256 id, address a) private view returns (bool) {
