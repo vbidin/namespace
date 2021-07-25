@@ -27,7 +27,7 @@
     "lint:eslint": "eslint -c conf/eslint.json 'test/**/*.spec.ts'",
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
     "build": "hardhat compile --config conf/hardhat.ts",
-    "test": "yarn build && hardhat test --config conf/hardhat.ts --no-compile",
+    "test": "hardhat test --config conf/hardhat.ts --no-compile",
     "clean": "rm -rf build"
   },
   "devDependencies": {
