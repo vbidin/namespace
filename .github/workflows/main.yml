@@ -23,34 +23,22 @@ jobs:
     needs: build
     steps:
       - name: echo
-        run: echo run unit and gas tests
-  security:
+        run: echo run unit tests and gas tests
+  scan:
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: echo
         run: echo run slither, manticore and echidna
-  deployment:
-    runs-on: ubuntu-latest
-    needs: [lint, test, security]
-    steps:
-      - name: echo
-        run: echo deploy contracts on ropsten
   integration:
     runs-on: ubuntu-latest
-    needs: [deployment]
+    needs: [lint, test, scan]
     steps:
       - name: echo
-        run: echo run integration tests on ropsten
-  tag:
+        run: echo deploy contracts on ropsten and run integration tests
+  publish:
     runs-on: ubuntu-latest
     needs: [integration]
     steps:
       - name: echo
-        run: echo increment patch version and tag commit
-  publish:
-    runs-on: ubuntu-latest
-    needs: [tag]
-    steps:
-      - name: echo
-        run: echo publish package to npm and github
+        run: echo increment semver, tag commit, publish package to npm and github
