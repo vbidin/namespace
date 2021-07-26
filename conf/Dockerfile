@@ -11,3 +11,5 @@ COPY conf/ conf/
 COPY src/ src/
 COPY test/ test/
 RUN yarn build
+
+ENTRYPOINT ["/bin/sh"]
