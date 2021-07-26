@@ -10,48 +10,48 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: conf/Dockerfile
-          tags: bidin/namespace-ci
-          push: true
+    - uses: actions/checkout@v2
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: conf/Dockerfile
+        tags: bidin/namespace-ci:${{ github.sha }}
+        push: true
   lint:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: echo
-        run: echo run formatter and linters
+    - name: echo
+      run: echo run formatter and linters
   test:
     runs-on: ubuntu-latest
     needs: build
-    container: bidin/namespace-ci
+    container: bidin/namespace-ci:${{ github.sha }}
     steps:
-      - name: Run unit tests
-        run: yarn test
+    - run: pwd
+    - run: yarn test
   security:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: echo
-        run: echo run slither, manticore and echidna
+    - name: echo
+      run: echo run slither, manticore and echidna
   integration:
     runs-on: ubuntu-latest
     needs: [lint, test, security]
     steps:
-      - name: echo
-        run: echo deploy contracts on ropsten and run integration tests
+    - name: echo
+      run: echo deploy contracts on ropsten and run integration tests
   publish:
     runs-on: ubuntu-latest
     needs: [integration]
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - name: echo
-        run: echo increment semver, tag commit, publish package to npm and github
+    - name: echo
+      run: echo increment semver, tag commit, publish package to npm and github
