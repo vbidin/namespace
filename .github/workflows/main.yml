@@ -2,6 +2,7 @@ name: Main
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -39,7 +40,6 @@ jobs:
       - run: echo run slither
       - run: echo run manticore
       - run: echo run echidna
-      - run: echo what about mythx?
   integration:
     runs-on: ubuntu-latest
     needs: [lint, test, performance, security]
