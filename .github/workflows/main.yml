@@ -48,7 +48,7 @@ jobs:
       - run: echo deploy contracts on ropsten
       - run: echo verify etherscan source code
       - run: echo run integration tests
-  tag:
+  publish:
     runs-on: ubuntu-latest
     needs: [integration]
     if: ${{ github.ref == 'refs/heads/main' }}
