@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - run: git config --global user.email=mr@pee.wee && git config --global user.name=peewee
+      - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
       - run: yarn version --minor
       - run: git push --tags
       - run: echo publish package to npm
