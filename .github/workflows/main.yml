@@ -59,7 +59,7 @@ jobs:
         with:
           node-version: "16"
       - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
-      - run: yarn version --minor
-      - run: git push --tags
+      - run: yarn version --patch --message "Increment patch version [skip ci]"
+      - run: git push --follow-tags
       - run: echo publish package to npm
       - run: echo publish package to github
