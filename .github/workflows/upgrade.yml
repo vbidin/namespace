@@ -1,4 +1,4 @@
-name: Automatic upgrade
+name: Upgrade
 
 on:
   schedule:
