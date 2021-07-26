@@ -23,6 +23,7 @@
   "scripts": {
     "prepare": "husky install conf",
     "format": "prettier -c conf/prettier.json --ignore-path conf/prettierignore --write .",
+    "format:check": "prettier -c conf/prettier.json --ignore-path conf/prettierignore --check .",
     "lint:solhint": "solhint -c conf/solhint.json 'src/**/*.sol'",
     "lint:eslint": "eslint -c conf/eslint.json 'test/**/*.spec.ts'",
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",

@@ -3,55 +3,52 @@ name: Main
 on:
   push:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USER }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build and push image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: conf/Dockerfile
-        tags: bidin/namespace-ci:${{ github.sha }}
-        push: true
   lint:
     runs-on: ubuntu-latest
-    needs: build
     steps:
-    - name: echo
-      run: echo run formatter and linters
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - run: yarn install --frozen-lockfile
+      - run: yarn format:check
+      - run: yarn lint:solhint
+      - run: yarn lint:eslint
   test:
     runs-on: ubuntu-latest
-    needs: build
-    container: bidin/namespace-ci:${{ github.sha }}
     steps:
-    - run: pwd
-    - run: yarn test
+      - run: echo
+      - run: echo run unit tests with code coverage
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo check deployment costs
+      - run: echo check average gas usage
   security:
     runs-on: ubuntu-latest
-    needs: build
     steps:
-    - name: echo
-      run: echo run slither, manticore and echidna
+      - run: echo run slither
+      - run: echo run manticore
+      - run: echo run echidna
+      - run: echo what about mythx?
   integration:
     runs-on: ubuntu-latest
-    needs: [lint, test, security]
+    needs: [lint, test, performance, security]
     steps:
-    - name: echo
-      run: echo deploy contracts on ropsten and run integration tests
+      - run: echo deploy contracts on ropsten
+      - run: echo verify etherscan source code
+      - run: echo run integration tests
   publish:
     runs-on: ubuntu-latest
     needs: [integration]
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-    - name: echo
-      run: echo increment semver, tag commit, publish package to npm and github
+      - run: echo increment semver
+      - run: echo tag commit
+      - run: echo push commit and tag
+      - run: echo publish package to npm
+      - run: echo publish package to github
