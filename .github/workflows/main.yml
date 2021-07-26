@@ -64,10 +64,11 @@ jobs:
       - run: yarn version --patch --message "Increment patch version [skip ci]"
       - run: git push --follow-tags
 
+      - run: yarn config set always-auth true
       - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set _auth ${{ secrets.NPM_TOKEN }}
       - run: yarn publish
 
       - run: yarn config set registry https://npm.pkg.github.com
-      - run: yarn config set _auth ${{ secrets.GITHUB_TOKEN }}
+      - run: yarn config set _auth ${{ github.token }}
       - run: yarn publish
