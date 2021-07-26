@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PEEWEE_TOKEN }}
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
       - run: yarn upgrade
       - run: git add .
-      - run: git commit -m "Upgrade packages"
+      - run: git status
+      - run: git -c user.name=peewee -c user.email=peewee commit -m "Upgrade packages"
       - run: git push
