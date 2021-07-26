@@ -18,5 +18,5 @@ jobs:
       - run: yarn upgrade
       - run: git add .
       - run: git status
-      - run: git -c user.name=peewee -c user.email=peewee commit -m "Upgrade packages"
+      - run: git -c user.name=peewee -c user.email=mr@pee.wee commit -m "Upgrade packages"
       - run: git push
