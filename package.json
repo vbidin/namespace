@@ -1,6 +1,6 @@
 {
   "name": "@namespace-domains/contracts",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Smart contracts for the Namespace protocol",
   "author": {
     "name": "Vedran Bidin",
