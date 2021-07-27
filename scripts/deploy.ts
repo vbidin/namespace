@@ -24,6 +24,7 @@ async function main() {
   const contractNames: string[] = getContractNames();
   for (const contractName of contractNames) {
     const constructorArguments = getConstructorArguments(contractName);
+    console.log(`Deploying ${contractName}...`);
     const contract = await deploy(
       contractName,
       constructorArguments,
@@ -31,7 +32,7 @@ async function main() {
       gasLimit,
       gasPrice
     );
-    console.log(`${contractName}: ${contract.address}`);
+    console.log(`Deployed ${contractName} at ${contract.address}`);
   }
 }
 
@@ -70,7 +71,7 @@ async function getGasLimit(provider: Provider): Promise<BigNumber> {
 
 async function getGasPrice(): Promise<BigNumber> {
   // add dynamic checks for gas price here (ethgasstation?)
-  return BigNumber.from(10 * 10 ** 9);
+  return BigNumber.from(25 * 10 ** 9);
 }
 
 function getContractNames(): string[] {
