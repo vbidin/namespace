@@ -29,6 +29,7 @@
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
     "build": "hardhat compile --config conf/hardhat.ts",
     "test": "hardhat test --config conf/hardhat.ts --no-compile",
+    "deploy": "hardhat run scripts/deploy.ts --config conf/hardhat.ts --no-compile",
     "clean": "rm -rf build"
   },
   "devDependencies": {
