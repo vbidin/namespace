@@ -59,13 +59,11 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
+          registry: https://registry.npmjs.org
       - run: yarn install --frozen-lockfile
       - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
       - run: yarn version --patch --message "Increment patch version [skip ci]"
       - run: git push --follow-tags
-      - run: yarn publish --registry https://registry.npmjs.org
+      - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: yarn publish --registry https://npm.pkg.github.com
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
