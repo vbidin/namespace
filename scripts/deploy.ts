@@ -1,18 +1,20 @@
 import hre from "hardhat";
 
 import { ethers } from "hardhat";
-import { Signer, Wallet, providers, Contract, ContractFactory } from "ethers";
+import { Signer, Wallet, providers, Contract, ContractFactory, BigNumber } from "ethers";
 
+type Block = providers.Block;
 type Provider = providers.Provider;
 
 async function main() {
   const [providerUrl, privateKey, etherscanKey] = validate(process.env);
+
   const provider: Provider = getProvider(providerUrl);
   const signer: Signer = getSigner(privateKey, provider);
-  const gasLimit: number = getBlockSize();
-  const gasPrice: number = getGasPrice();
-  const contractNames: string[] = getContractNames();
+  const gasLimit: BigNumber = await getGasLimit(provider);
+  const gasPrice: BigNumber = await getGasPrice();
 
+  const contractNames: string[] = getContractNames();
   for (const contractName of contractNames) {
     const constructorArguments = getConstructorArguments(contractName);
     const contract = await deploy(
@@ -22,7 +24,7 @@ async function main() {
       gasLimit,
       gasPrice
     );
-    //await verify(contractName, etherscanKey);
+    console.log(`${contractName}: ${contract.address}`);
   }
 }
 
@@ -33,6 +35,8 @@ function validate(env: any): string[] {
     throw new Error("Infura Project ID is required.");
   if (env.ETHEREUM_PRIVATE_KEY == null)
     throw new Error("Ethereum private key is required.");
+  if (env.DEFI_PULSE_API_KEY == null)
+    throw new Error("Defi Pulse API key is required.")
   if (env.ETHERSCAN_API_KEY == null)
     throw new Error("Etherscan API key is required.");
 
@@ -51,12 +55,15 @@ function getSigner(privateKey: string, provider: providers.Provider): Signer {
   return new Wallet(privateKey, provider);
 }
 
-function getBlockSize(): number {
-  return 10;
+async function getGasLimit(provider: Provider): Promise<BigNumber> {
+  const blockNumber: number = await provider.getBlockNumber();
+  const block: Block = await provider.getBlock(blockNumber);
+  return block.gasLimit.sub(block.gasLimit.mod(10**6));
 }
 
-function getGasPrice(): number {
-  return 10;
+async function getGasPrice(): Promise<BigNumber> {
+  // add dynamic checks for gas price here (ethgasstation?)
+  return BigNumber.from(10 * 10**9);
 }
 
 function getContractNames(): string[] {
@@ -71,18 +78,14 @@ async function deploy(
   contractName: string,
   constructorArguments: any[],
   signer: Signer,
-  gasLimit: number,
-  gasPrice: number
-) {
+  gasLimit: BigNumber,
+  gasPrice: BigNumber
+): Promise<Contract> {
   let factory: ContractFactory = await ethers.getContractFactory(contractName);
   factory = factory.connect(signer);
   constructorArguments.push({ gasLimit, gasPrice });
   const contract: Contract = await factory.deploy(...constructorArguments);
   return await contract.deployed();
-}
-
-async function verify(name: string, etherscanKey: string) {
-  return;
 }
 
 main()
