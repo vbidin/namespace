@@ -1,7 +1,14 @@
 import hre from "hardhat";
 
 import { ethers } from "hardhat";
-import { Signer, Wallet, providers, Contract, ContractFactory, BigNumber } from "ethers";
+import {
+  Signer,
+  Wallet,
+  providers,
+  Contract,
+  ContractFactory,
+  BigNumber,
+} from "ethers";
 
 type Block = providers.Block;
 type Provider = providers.Provider;
@@ -36,7 +43,7 @@ function validate(env: any): string[] {
   if (env.ETHEREUM_PRIVATE_KEY == null)
     throw new Error("Ethereum private key is required.");
   if (env.DEFI_PULSE_API_KEY == null)
-    throw new Error("Defi Pulse API key is required.")
+    throw new Error("Defi Pulse API key is required.");
   if (env.ETHERSCAN_API_KEY == null)
     throw new Error("Etherscan API key is required.");
 
@@ -58,12 +65,12 @@ function getSigner(privateKey: string, provider: providers.Provider): Signer {
 async function getGasLimit(provider: Provider): Promise<BigNumber> {
   const blockNumber: number = await provider.getBlockNumber();
   const block: Block = await provider.getBlock(blockNumber);
-  return block.gasLimit.sub(block.gasLimit.mod(10**6));
+  return block.gasLimit.sub(block.gasLimit.mod(10 ** 6));
 }
 
 async function getGasPrice(): Promise<BigNumber> {
   // add dynamic checks for gas price here (ethgasstation?)
-  return BigNumber.from(10 * 10**9);
+  return BigNumber.from(10 * 10 ** 9);
 }
 
 function getContractNames(): string[] {
