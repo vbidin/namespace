@@ -6,10 +6,10 @@ pragma solidity ^0.8.0;
 interface IERC20 {
     /// @notice
     /// @dev
-    /// @param from -
-    /// @param to -
+    /// @param sender -
+    /// @param recipient -
     /// @param amount -
-    event Transfer(address indexed from, address indexed to, uint256 amount);
+    event Transfer(address indexed sender, address indexed recipient, uint256 amount);
 
     /// @notice
     /// @dev
