@@ -6,28 +6,28 @@ import "./IERC165.sol";
 /// @title Interface of the ERC-721 standard
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 interface IERC721 is IERC165 {
-    /// @notice Emitted when the `id` domain is transferred from `from` to `to`.
+    /// @notice Emitted when the `domainId` domain is transferred from `sender` to `recipient`.
     /// @dev This event is emitted when ownership of any domain changes by any mechanism.
-    /// This includes when domains are registered (`from` == 0) and released (`to` == 0).
-    /// @param from The address the domain is being transferred from.
-    /// @param to The address the domain is being transferred to.
-    /// @param id The domain identifier.
+    /// This includes when domains are registered (`sender` == 0) and if they are public (`recipient` == 0).
+    /// @param sender The address the domain is being transferred from.
+    /// @param recipient The address the domain is being transferred to.
+    /// @param domainId The domain identifier.
     event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed id
+        address indexed sender,
+        address indexed recipient,
+        uint256 indexed domainId
     );
 
-    /// @notice Emitted when `owner` enables `approved` to manage the `id` domain.
+    /// @notice Emitted when `owner` enables `approved` to manage the `domainId` domain.
     /// @dev This event is emitted when the `approved` address for a domain changes or is reaffirmed.
     /// A zero address indicates the `approved` address has been reset.
     /// @param owner The domain owner.
     /// @param approved The approved third party.
-    /// @param id The domain identifier.
+    /// @param domainId The domain identifier.
     event Approval(
         address indexed owner,
         address indexed approved,
-        uint256 indexed id
+        uint256 indexed domainId
     );
 
     /// @notice Emitted when `owner` enables or disables `operator`.
@@ -41,59 +41,59 @@ interface IERC721 is IERC165 {
         bool approved
     );
 
-    /// @notice Transfers the `id` domain from `from` to `to`.
+    /// @notice Transfers the `domainId` domain from `sender` to `recipient`.
     /// @dev Emits a {Transfer} event.
     /// Throws an exception if:
-    /// - `from` is the zero address or is not the current owner.
-    /// - `to` is the zero address.
-    /// - `id` domain does not exist.
+    /// - `sender` is the zero address or is not the current owner.
+    /// - `recipient` is the zero address.
+    /// - `domainId` domain does not exist.
     /// - `msg.sender` is not the current owner, an operator, or an approved address.
-    /// @param from The address the domain is being transferred from.
-    /// @param to The address the domain is being transferred to.
-    /// @param id The domain identifier.
+    /// @param sender The address the domain is being transferred from.
+    /// @param recipient The address the domain is being transferred to.
+    /// @param domainId The domain identifier.
     function transferFrom(
-        address from,
-        address to,
-        uint256 id
+        address sender,
+        address recipient,
+        uint256 domainId
     ) external;
 
-    /// @notice Safely transfers the `id` domain from `from` to `to`.
+    /// @notice Safely transfers the `domainId` domain from `sender` to `recipient`.
     /// @dev Equivalent to calling {transferFrom} but throws an exception if
-    /// - `to` is not a smart contract (code size != 0) or does not implement `onERC721Received`
+    /// - `recipient` is not a smart contract (code size != 0) or does not implement `onERC721Received`
     /// - `onERC721Received` returns an invalid value (value != '0x150b7a02').
-    /// @param from The address the domain is being transferred from.
-    /// @param to The address the domain is being transferred to.
-    /// @param id The domain identifier.
+    /// @param sender The address the domain is being transferred from.
+    /// @param recipient The address the domain is being transferred to.
+    /// @param domainId The domain identifier.
     /// @param data Additional data with no specified format.
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
+        address sender,
+        address recipient,
+        uint256 domainId,
         bytes calldata data
     ) external;
 
-    /// @notice Safely transfers the `id` domain from `from` to `to`.
+    /// @notice Safely transfers the `domainId` domain from `sender` to `recipient`.
     /// @dev Equivalent to calling {safeTransferFrom} but with empty `data`.
-    /// @param from The address the domain is being transferred from.
-    /// @param to The address the domain is being transferred to.
-    /// @param id The domain identifier.
+    /// @param sender The address the domain is being transferred from.
+    /// @param recipient The address the domain is being transferred to.
+    /// @param domainId The domain identifier.
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id
+        address sender,
+        address recipient,
+        uint256 domainId
     ) external;
 
-    /// @notice Gives permission to `approved` to transfer the `id` domain to another account.
+    /// @notice Gives permission to `approved` to transfer the `domainId` domain to another account.
     /// @dev Only a single address can be approved at any given time.
     /// The approved address is set to zero after the transfer.
     /// Emits an {Approval} event.
     /// Throws an exception if:
     /// - `approved` is the zero address.
-    /// - `id` domain does not exist.
-    /// - `msg.sender` is not the owner or approved operator of the `id` domain.
+    /// - `domainId` domain does not exist.
+    /// - `msg.sender` is not the owner or approved operator of the `domainId` domain.
     /// @param approved The third party account.
-    /// @param id The domain identifier.
-    function approve(address approved, uint256 id) external;
+    /// @param domainId The domain identifier.
+    function approve(address approved, uint256 domainId) external;
 
     /// @notice Add or remove `operator` as an operator for the caller.
     /// @dev Operators can call {transferFrom} or {safeTransferFrom} for any domain owned by the caller.
@@ -103,11 +103,11 @@ interface IERC721 is IERC165 {
     /// @param approved If the `operator` is allowed to manage all of the domains of the caller.
     function setApprovalForAll(address operator, bool approved) external;
 
-    /// @notice Returns the owner of the `id` domain.
-    /// @dev Throws an exception if the `id` domain does not exist.
-    /// @param id The domain identifier.
-    /// @return The owner of the `id` domain.
-    function ownerOf(uint256 id) external view returns (address);
+    /// @notice Returns the owner of the `domainId` domain.
+    /// @dev Throws an exception if the `domainId` domain does not exist.
+    /// @param domainId The domain identifier.
+    /// @return The owner of the `domainId` domain.
+    function ownerOf(uint256 domainId) external view returns (address);
 
     /// @notice Returns the number of domains the `owner` owns.
     /// @param owner The owner address.
@@ -115,11 +115,11 @@ interface IERC721 is IERC165 {
     /// @return The number of domains the `owner` owns.
     function balanceOf(address owner) external view returns (uint256);
 
-    /// @notice Returns the account approved for the `id` domain.
-    /// @param id Identifier of the domain.
-    /// Throws an exception if the `id` domain does not exist.
-    /// @return The account approved for the `id` domain.
-    function getApproved(uint256 id) external view returns (address);
+    /// @notice Returns the account approved for the `domainId` domain.
+    /// @param domainId Identifier of the domain.
+    /// Throws an exception if the `domainId` domain does not exist.
+    /// @return The account approved for the `domainId` domain.
+    function getApproved(uint256 domainId) external view returns (address);
 
     /// @notice Checks if the `operator` is allowed to manage all of the domains of `owner`.
     /// @param owner The owner of the domains.
