@@ -14,7 +14,7 @@ export default {
         count: 1,
       },
       blockGasLimit: 15000000,
-      hardfork: "berlin",
+      hardfork: "london",
     },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
