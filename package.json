@@ -31,7 +31,7 @@
     "build": "hardhat compile --config configurations/hardhat.ts",
     "test:unit": "hardhat test --config configurations/hardhat.ts --no-compile",
     "test:integration": "echo TODO",
-    "deploy": "hardhat run scripts/deploy.ts --config configurations/hardhat.ts --no-compile",
+    "deploy": "hardhat run scripts/deployment/deploy.ts --config configurations/hardhat.ts --no-compile",
     "clean": "rm -rf artifacts"
   },
   "devDependencies": {
@@ -45,6 +45,7 @@
     "@types/mocha": "^8.2.3",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
+    "axios": "^0.21.1",
     "chai": "^4.3.4",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",

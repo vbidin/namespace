@@ -7,7 +7,7 @@ import "hardhat-docgen";
 import "solidity-coverage";
 
 export default {
-  defaultNetwork: "hardhat",
+  privateKey: process.env.ETHEREUM_PRIVATE_KEY,
   networks: {
     hardhat: {
       accounts: {
@@ -37,8 +37,9 @@ export default {
     root: "..",
     sources: "contracts",
     tests: "tests/unit",
-    cache: "artifacts/cache",
     artifacts: "artifacts",
+    cache: "artifacts/cache",
+    deployment: "artifacts/deployment",
   },
   typechain: {
     outDir: "artifacts/types",
@@ -57,6 +58,9 @@ export default {
     path: "artifacts/docs",
     clear: true,
     runOnCompile: false,
+  },
+  ethGasStation: {
+    url: `https://ethgasstation.info/api/ethgasAPI.json?api-key=${process.env.DEFI_PULSE_API_KEY}`,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
