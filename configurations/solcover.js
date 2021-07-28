@@ -1,5 +1,5 @@
 module.exports = {
   silent: true,
-  istanbulFolder: "build/coverage",
+  istanbulFolder: "artifacts/coverage",
   istanbulReporter: ["text"],
 };

@@ -14,6 +14,7 @@
   "license": "MIT",
   "keywords": [
     "namespace",
+    "blockchain",
     "ethereum",
     "domains"
   ],
@@ -21,17 +22,17 @@
     "node": "^16.0.0"
   },
   "scripts": {
-    "prepare": "husky install conf",
-    "format": "prettier -c conf/prettier.json --ignore-path conf/prettierignore --write .",
-    "format:check": "prettier -c conf/prettier.json --ignore-path conf/prettierignore --check .",
-    "lint:solhint": "solhint -c conf/solhint.json 'src/**/*.sol'",
-    "lint:eslint": "eslint -c conf/eslint.json 'test/**/*.spec.ts' 'scripts/**/*.ts'",
+    "prepare": "husky install configurations",
+    "format": "prettier -c configurations/prettier.json --ignore-path configurations/prettierignore --write .",
+    "format:check": "prettier -c configurations/prettier.json --ignore-path configurations/prettierignore --check .",
+    "lint:solhint": "solhint -c configurations/solhint.json 'src/**/*.sol'",
+    "lint:eslint": "eslint -c configurations/eslint.json 'test/**/*.spec.ts' 'scripts/**/*.ts'",
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
-    "build": "hardhat compile --config conf/hardhat.ts",
-    "test:unit": "hardhat test --config conf/hardhat.ts --no-compile",
+    "build": "hardhat compile --config configurations/hardhat.ts",
+    "test:unit": "hardhat test --config configurations/hardhat.ts --no-compile",
     "test:integration": "echo TODO",
-    "deploy": "hardhat run scripts/deploy.ts --config conf/hardhat.ts --no-compile",
-    "clean": "rm -rf build"
+    "deploy": "hardhat run scripts/deploy.ts --config configurations/hardhat.ts --no-compile",
+    "clean": "rm -rf artifacts"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",

@@ -35,13 +35,13 @@ export default {
   },
   paths: {
     root: "..",
-    sources: "src",
-    tests: "test/unit",
-    cache: "build/cache",
-    artifacts: "build",
+    sources: "contracts",
+    tests: "tests/unit-tests",
+    cache: "artifacts/cache",
+    artifacts: "artifacts",
   },
   typechain: {
-    outDir: "build/types",
+    outDir: "artifacts/types",
     target: "ethers-v5",
   },
   gasReporter: {
@@ -51,10 +51,10 @@ export default {
     gasPrice: process.env.GAS_PRICE,
     noColors: true,
     onlyCalledMethods: false,
-    src: "src",
+    src: "contracts",
   },
   docgen: {
-    path: "build/docs",
+    path: "artifacts/docs",
     clear: true,
     runOnCompile: false,
   },

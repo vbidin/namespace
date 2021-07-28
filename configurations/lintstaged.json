@@ -1,0 +1,10 @@
+{
+  "*.sol": [
+    "prettier -c configurations/prettier.json --write",
+    "solhint -c configurations/solhint.json"
+  ],
+  "*.ts": [
+    "prettier -c configurations/prettier.json --write",
+    "eslint -c configurations/eslint.json"
+  ]
+}

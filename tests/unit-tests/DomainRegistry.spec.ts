@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import { DomainRegistry } from "../../build/types/DomainRegistry";
+import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
 
 const contract = "DomainRegistry";
 describe(contract, () => {
