@@ -9,7 +9,11 @@ interface IERC20 {
     /// @param sender -
     /// @param recipient -
     /// @param amount -
-    event Transfer(address indexed sender, address indexed recipient, uint256 amount);
+    event Transfer(
+        address indexed sender,
+        address indexed recipient,
+        uint256 amount
+    );
 
     /// @notice
     /// @dev
