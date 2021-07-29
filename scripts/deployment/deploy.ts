@@ -4,39 +4,28 @@ import { writeFile } from "fs/promises";
 import { ethers } from "hardhat";
 import { Signer, Wallet, providers, Contract } from "ethers";
 
-import { CONTRACTS, DEPLOYMENT_FILE } from "./options";
+import { CONTRACTS, DEPLOYMENT_OUTPUT } from "./options";
 
 async function main() {
-  const [providerUrl, privateKey, etherscanKey] = validate();
-  const provider = getProvider(providerUrl);
-  const signer = getSigner(privateKey, provider);
-  const contractAddresses = await deployAndVerify(
-    CONTRACTS,
-    signer,
-    etherscanKey
-  );
+  validate();
+  const provider = getProvider((<any>hre.network.config).url);
+  const signer = getSigner((<any>hre.config).privateKey, provider);
+  const contractAddresses = await deployAndVerify(CONTRACTS, signer);
   await writeFile(
-    DEPLOYMENT_FILE,
+    DEPLOYMENT_OUTPUT,
     JSON.stringify(Object.fromEntries(contractAddresses.entries()))
   );
 }
 
-function validate(): string[] {
+function validate() {
   if (!("url" in hre.network.config))
     throw new Error("Hardhat network is not allowed.");
-
   if (process.env.INFURA_PROJECT_ID == null)
     throw new Error("Infura Project ID is required.");
   if (process.env.ETHEREUM_PRIVATE_KEY == null)
     throw new Error("Ethereum private key is required.");
   if (process.env.ETHERSCAN_API_KEY == null)
     throw new Error("Etherscan API key is required.");
-
-  return [
-    hre.network.config.url,
-    (<any>hre.config).privateKey,
-    (<any>hre.config).etherscan.apiKey,
-  ];
 }
 
 function getProvider(url: string): providers.Provider {
@@ -49,8 +38,7 @@ function getSigner(privateKey: string, provider: providers.Provider): Signer {
 
 async function deployAndVerify(
   contracts: Map<string, any[]>,
-  signer: Signer,
-  etherscanKey: string
+  signer: Signer
 ): Promise<Map<string, string>> {
   const contractAddresses = new Map<string, string>();
   for (const contractName of contracts.keys()) {
@@ -61,7 +49,7 @@ async function deployAndVerify(
     );
     contractAddresses.set(contractName, contract.address);
     link(contracts, contractName, contract.address);
-    await verify(contractName, contract.address, etherscanKey);
+    await verify(contract.address, contracts.get(contractName)!);
   }
   return contractAddresses;
 }
@@ -97,13 +85,8 @@ function link(
   }
 }
 
-async function verify(
-  contractName: string,
-  contractAddress: string,
-  etherscanKey: string
-) {
-  // verify with Etherscan
-  return;
+async function verify(contractAddress: string, constructorArguments: any[]) {
+  // TODO
 }
 
 main()
