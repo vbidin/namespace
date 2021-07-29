@@ -1,7 +1,7 @@
 import { writeFile } from "fs/promises";
 import { ethers } from "hardhat";
 import hre from "hardhat";
-import { Signer, Wallet, providers, Contract, ContractFactory } from "ethers";
+import { Signer, Wallet, providers, Contract } from "ethers";
 
 import { options } from "./options";
 
@@ -9,12 +9,9 @@ type Provider = providers.Provider;
 
 async function main() {
   const [providerUrl, privateKey, etherscanKey] = validate();
-  const provider: Provider = getProvider(providerUrl);
-  const signer: Signer = getSigner(privateKey, provider);
-  const contractAddresses: string[] = await deployAndVerify(
-    signer,
-    etherscanKey
-  );
+  const provider = getProvider(providerUrl);
+  const signer = getSigner(privateKey, provider);
+  const contractAddresses = await deployAndVerify(signer, etherscanKey);
   await writeFile(options.outputFile, JSON.stringify(contractAddresses));
 }
 
@@ -67,9 +64,9 @@ async function deploy(
   constructorArguments: string[],
   signer: Signer
 ): Promise<Contract> {
-  let factory: ContractFactory = await ethers.getContractFactory(contractName);
+  let factory = await ethers.getContractFactory(contractName);
   factory = factory.connect(signer);
-  const contract: Contract = await factory.deploy(...constructorArguments);
+  const contract = await factory.deploy(...constructorArguments);
   console.log(`deploying ${contractName}...`);
   console.log(`transaction hash: ${contract.deployTransaction.hash}`);
   await contract.deployed();
