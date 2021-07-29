@@ -39,7 +39,6 @@ export default {
     tests: "tests/unit",
     artifacts: "artifacts",
     cache: "artifacts/cache",
-    deployment: "artifacts/deployment",
   },
   typechain: {
     outDir: "artifacts/types",

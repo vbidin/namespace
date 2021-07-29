@@ -1,18 +1,24 @@
+import hre from "hardhat";
+
 import { writeFile } from "fs/promises";
 import { ethers } from "hardhat";
-import hre from "hardhat";
 import { Signer, Wallet, providers, Contract } from "ethers";
 
-import { options } from "./options";
-
-type Provider = providers.Provider;
+import { CONTRACTS, DEPLOYMENT_FILE } from "./options";
 
 async function main() {
   const [providerUrl, privateKey, etherscanKey] = validate();
   const provider = getProvider(providerUrl);
   const signer = getSigner(privateKey, provider);
-  const contractAddresses = await deployAndVerify(signer, etherscanKey);
-  await writeFile(options.outputFile, JSON.stringify(contractAddresses));
+  const contractAddresses = await deployAndVerify(
+    CONTRACTS,
+    signer,
+    etherscanKey
+  );
+  await writeFile(
+    DEPLOYMENT_FILE,
+    JSON.stringify(Object.fromEntries(contractAddresses.entries()))
+  );
 }
 
 function validate(): string[] {
@@ -42,26 +48,27 @@ function getSigner(privateKey: string, provider: providers.Provider): Signer {
 }
 
 async function deployAndVerify(
+  contracts: Map<string, any[]>,
   signer: Signer,
   etherscanKey: string
-): Promise<string[]> {
-  const contractAddresses: string[] = [];
-  for (let i = 0; i < options.contractNames.length; i++) {
+): Promise<Map<string, string>> {
+  const contractAddresses = new Map<string, string>();
+  for (const contractName of contracts.keys()) {
     const contract = await deploy(
-      options.contractNames[i],
-      options.constructorArguments[i],
+      contractName,
+      contracts.get(contractName)!,
       signer
     );
-    contractAddresses.push(contract.address);
-    link(i, contract.address);
-    await verify(options.contractNames[i], contract.address, etherscanKey);
+    contractAddresses.set(contractName, contract.address);
+    link(contracts, contractName, contract.address);
+    await verify(contractName, contract.address, etherscanKey);
   }
   return contractAddresses;
 }
 
 async function deploy(
   contractName: string,
-  constructorArguments: string[],
+  constructorArguments: any[],
   signer: Signer
 ): Promise<Contract> {
   let factory = await ethers.getContractFactory(contractName);
@@ -74,14 +81,17 @@ async function deploy(
   return contract;
 }
 
-function link(contractIndex: number, contractAddress: string) {
-  for (let i = contractIndex + 1; i < options.contractNames.length; i++) {
-    for (let j = 0; j < options.constructorArguments[i].length; j++) {
-      if (
-        options.constructorArguments[i][j] ==
-        options.contractNames[contractIndex]
-      ) {
-        options.constructorArguments[i][j] = contractAddress;
+function link(
+  contracts: Map<string, any[]>,
+  deployedContractName: string,
+  deployedContractAddress: string
+) {
+  for (const contractName of contracts.keys()) {
+    const constructorArguments = contracts.get(contractName)!;
+    for (let i = 0; i < constructorArguments.length; i++) {
+      if (constructorArguments[i] == deployedContractName) {
+        constructorArguments[i] = deployedContractAddress;
+        console.log(`updated constructor arguments of ${contractName}`);
       }
     }
   }
