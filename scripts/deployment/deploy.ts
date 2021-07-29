@@ -1,9 +1,7 @@
 import hre from "hardhat";
-
 import { writeFile } from "fs/promises";
 import { ethers } from "hardhat";
 import { Signer, Wallet, providers, Contract } from "ethers";
-
 import { CONTRACTS, DEPLOYMENT_OUTPUT } from "./options";
 
 async function main() {
@@ -48,7 +46,7 @@ async function deployAndVerify(
       signer
     );
     contractAddresses.set(contractName, contract.address);
-    link(contracts, contractName, contract.address);
+    updateConstructorArguments(contracts, contractName, contract.address);
     await verify(contract.address, contracts.get(contractName)!);
   }
   return contractAddresses;
@@ -69,7 +67,7 @@ async function deploy(
   return contract;
 }
 
-function link(
+function updateConstructorArguments(
   contracts: Map<string, any[]>,
   deployedContractName: string,
   deployedContractAddress: string

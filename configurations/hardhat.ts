@@ -13,7 +13,6 @@ export default {
       accounts: {
         count: 1,
       },
-      blockGasLimit: 15000000,
       hardfork: "london",
     },
     ropsten: {

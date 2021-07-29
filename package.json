@@ -30,8 +30,8 @@
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
     "build": "hardhat compile --config configurations/hardhat.ts",
     "test:unit": "hardhat test --config configurations/hardhat.ts --no-compile",
-    "test:integration": "echo TODO",
-    "deploy": "hardhat run scripts/deployment/deploy.ts --config configurations/hardhat.ts --no-compile",
+    "test:integration": "hardhat run --config configurations/hardhat.ts --no-compile tests/integration/run.ts",
+    "deploy": "hardhat run --config configurations/hardhat.ts --no-compile scripts/deployment/deploy.ts",
     "clean": "rm -rf artifacts"
   },
   "devDependencies": {
