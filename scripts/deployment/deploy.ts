@@ -18,8 +18,10 @@ type Provider = providers.Provider;
 
 async function main() {
   const [providerUrl, privateKey, ethGasStationUrl, etherscanKey] = validate();
+  const provider: Provider = getProvider(providerUrl);
+  const signer: Signer = getSigner(privateKey, provider);
   const contractAddresses: string[] = await deployAndVerify(
-    getSigner(privateKey, getProvider(providerUrl)),
+    signer,
     etherscanKey
   );
   await writeFile(options.outputFile, JSON.stringify(contractAddresses));
@@ -33,15 +35,12 @@ function validate(): string[] {
     throw new Error("Infura Project ID is required.");
   if (process.env.ETHEREUM_PRIVATE_KEY == null)
     throw new Error("Ethereum private key is required.");
-  if (process.env.DEFI_PULSE_API_KEY == null)
-    throw new Error("Defi Pulse API key is required.");
   if (process.env.ETHERSCAN_API_KEY == null)
     throw new Error("Etherscan API key is required.");
 
   return [
     hre.network.config.url,
     (<any>hre.config).privateKey,
-    (<any>hre.config).ethGasStation.url,
     (<any>hre.config).etherscan.apiKey,
   ];
 }
@@ -71,7 +70,6 @@ async function deployAndVerify(
     link(i, contract.address);
     await verify(contract.address, etherscanKey);
   }
-
   return contractAddresses;
 }
 

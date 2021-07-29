@@ -59,9 +59,6 @@ export default {
     clear: true,
     runOnCompile: false,
   },
-  ethGasStation: {
-    url: `https://ethgasstation.info/api/ethgasAPI.json?api-key=${process.env.DEFI_PULSE_API_KEY}`,
-  },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
