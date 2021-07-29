@@ -28,12 +28,10 @@ jobs:
           node-version: 16
       - run: yarn install --frozen-lockfile
       - run: yarn build
+      - run: yarn test:deployment
+      - run: yarn test:compatibility
       - run: yarn test:unit # include code coverage
-  performance:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo check deployment costs
-      - run: echo check average gas usage
+      - run: yarn test:performance
   security:
     runs-on: ubuntu-latest
     steps:
