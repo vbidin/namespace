@@ -29,11 +29,10 @@
     "lint:eslint": "eslint -c configurations/eslint.json 'tests/**/*.spec.ts' 'scripts/**/*.ts'",
     "lint": "yarn format; yarn lint:solhint && yarn lint:eslint",
     "build": "hardhat compile --config configurations/hardhat.ts",
-    "test:deployment": "echo check deployment size of contracts",
-    "test:compatibility": "echo check compatibility with ERC-20 and ERC-721",
     "test:unit": "hardhat test --config configurations/hardhat.ts --no-compile",
-    "test:performance": "echo check gas usage",
+    "test:gas": "echo check gas usage",
     "test:integration": "hardhat run --config configurations/hardhat.ts --no-compile tests/integration/run.ts",
+    "scan:slither": "slither contracts/DomainRegistry.sol --print human-summary",
     "deploy": "hardhat run --config configurations/hardhat.ts --no-compile scripts/deployment/deploy.ts",
     "clean": "rm -rf artifacts"
   },
