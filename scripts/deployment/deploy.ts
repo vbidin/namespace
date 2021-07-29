@@ -1,23 +1,14 @@
 import { writeFile } from "fs/promises";
-import get from "axios";
 import { ethers } from "hardhat";
 import hre from "hardhat";
-import {
-  Signer,
-  Wallet,
-  providers,
-  Contract,
-  ContractFactory,
-  BigNumber,
-} from "ethers";
+import { Signer, Wallet, providers, Contract, ContractFactory } from "ethers";
 
 import { options } from "./options";
 
-type Block = providers.Block;
 type Provider = providers.Provider;
 
 async function main() {
-  const [providerUrl, privateKey, ethGasStationUrl, etherscanKey] = validate();
+  const [providerUrl, privateKey, etherscanKey] = validate();
   const provider: Provider = getProvider(providerUrl);
   const signer: Signer = getSigner(privateKey, provider);
   const contractAddresses: string[] = await deployAndVerify(
@@ -59,29 +50,31 @@ async function deployAndVerify(
 ): Promise<string[]> {
   const contractAddresses: string[] = [];
   for (let i = 0; i < options.contractNames.length; i++) {
-    console.log(`deploying ${options.contractNames[i]}`);
     const contract = await deploy(
       options.contractNames[i],
       options.constructorArguments[i],
       signer
     );
-    console.log(`deployed ${options.contractNames[i]}`);
     contractAddresses.push(contract.address);
     link(i, contract.address);
-    await verify(contract.address, etherscanKey);
+    await verify(options.contractNames[i], contract.address, etherscanKey);
   }
   return contractAddresses;
 }
 
 async function deploy(
   contractName: string,
-  constructorArguments: any[],
+  constructorArguments: string[],
   signer: Signer
 ): Promise<Contract> {
   let factory: ContractFactory = await ethers.getContractFactory(contractName);
   factory = factory.connect(signer);
   const contract: Contract = await factory.deploy(...constructorArguments);
-  return await contract.deployed();
+  console.log(`deploying ${contractName}...`);
+  console.log(`transaction hash: ${contract.deployTransaction.hash}`);
+  await contract.deployed();
+  console.log(`deployed on address: ${contract.address}`);
+  return contract;
 }
 
 function link(contractIndex: number, contractAddress: string) {
@@ -97,7 +90,11 @@ function link(contractIndex: number, contractAddress: string) {
   }
 }
 
-async function verify(contractAddress: string, etherscanKey: string) {
+async function verify(
+  contractName: string,
+  contractAddress: string,
+  etherscanKey: string
+) {
   // verify with Etherscan
   return;
 }
