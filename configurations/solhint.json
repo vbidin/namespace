@@ -27,7 +27,7 @@
     "no-inline-assembly": "error",
     "no-unused-vars": "warn",
     "not-rely-on-block-hash": "error",
-    "not-rely-on-time": "error",
+    "not-rely-on-time": "warn",
     "ordering": "error",
     "payable-fallback": "warn",
     "prettier/prettier": "error",
