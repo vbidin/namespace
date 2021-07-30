@@ -12,8 +12,4 @@ describe(contract, () => {
     registry = (await factory.deploy()) as DomainRegistry;
     await registry.deployed();
   });
-
-  it("should throw an exception", async () => {
-    await expect(registry.ownerOf(1)).to.be.reverted;
-  });
 });
