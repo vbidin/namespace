@@ -7,13 +7,13 @@ This repository contains the smart contracts that are used to create and manage 
 
 ## Install
 
-Install [Node](https://nodejs.org/en/), and then run the following commands:
+Install [Node](https://nodejs.org/en/) and then run the following commands:
 
 ```
 yarn install
 ```
 
-Install [Python](https://www.python.org/), and then run the following commands:
+Install [Python](https://www.python.org/) and then run the following commands:
 
 ```
 pip install -r configurations/requirements.txt
