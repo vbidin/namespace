@@ -122,7 +122,9 @@ interface IERC721 is IERC165 {
     function getApproved(uint256 domainId) external view returns (address);
 
     /// @notice Checks if the `operator` is allowed to manage all of the domains of `owner`.
-    /// @param owner The owner of the domains.
+    /// @dev Throws an exception if the `owner` or `operator` is the zero address.
+    /// Throws an exception if the `owner` and `operator` are the same address.
+    /// @param owner The owner account.
     /// @param operator The third party account.
     /// @return Whether the `operator` is allowed to manage all of the domains of `owner`.
     function isApprovedForAll(address owner, address operator)
