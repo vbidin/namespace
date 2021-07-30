@@ -7,7 +7,7 @@ library Domain {
     using Utility for address;
 
     struct State {
-        bool created;
+        bool exists;
         address owner;
         address approved;
         // timestamp?
@@ -20,17 +20,25 @@ library Domain {
         address owner,
         string calldata name
     ) internal {
-        State storage state = domains[id];
-        state.created = true;
-        state.owner = owner;
-        state.name = name;
+        State storage domain = domains[id];
+        domain.exists = true;
+        domain.owner = owner;
+        domain.name = name;
     }
 
-    function exists(State storage domain) internal view returns (bool) {
-        return domain.created;
+    function isCreated(State storage domain) internal view returns (bool) {
+        return domain.exists;
     }
 
     function isPublic(State storage domain) internal view returns (bool) {
         return domain.owner.isZero();
+    }
+
+    function isOwner(State storage domain, address address_)
+        internal
+        view
+        returns (bool)
+    {
+        return domain.owner == address_;
     }
 }
