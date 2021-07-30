@@ -19,59 +19,59 @@ interface IERC20 {
     /// @dev
     /// @param owner -
     /// @param spender -
-    /// @param amount -
+    /// @param allowance -
     event Approval(
         address indexed owner,
         address indexed spender,
-        uint256 amount
+        uint256 allowance
     );
 
     /// @notice
     /// @dev
     /// @param recipient -
     /// @param amount -
-    /// @return
+    /// @return success -
     function transfer(address recipient, uint256 amount)
         external
-        returns (bool);
+        returns (bool success);
 
     /// @notice
     /// @dev
     /// @param sender -
     /// @param recipient -
     /// @param amount -
-    /// @return
+    /// @return success -
     function transferFrom(
         address sender,
         address recipient,
         uint256 amount
-    ) external returns (bool);
+    ) external returns (bool success);
 
     /// @notice
     /// @dev
     /// @param spender -
     /// @param amount -
-    /// @return
-    function approve(address spender, uint256 amount) external returns (bool);
+    /// @return success -
+    function approve(address spender, uint256 amount) external returns (bool success);
 
     /// @notice
     /// @dev
     /// @param owner -
-    /// @return
-    function balanceOf(address owner) external view returns (uint256);
+    /// @return balance -
+    function balanceOf(address owner) external view returns (uint256 balance);
 
     /// @notice
     /// @dev
-    /// @return
-    function totalSupply() external view returns (uint256);
+    /// @return totalSupply
+    function totalSupply() external view returns (uint256 totalSupply);
 
     /// @notice
     /// @dev
     /// @param owner -
     /// @param spender -
-    /// @return
+    /// @return allowance -
     function allowance(address owner, address spender)
         external
         view
-        returns (uint256);
+        returns (uint256 allowance);
 }

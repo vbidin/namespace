@@ -106,20 +106,20 @@ interface IERC721 is IERC165 {
     /// @notice Returns the owner of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain does not exist.
     /// @param domainId The domain identifier.
-    /// @return The owner of the `domainId` domain.
-    function ownerOf(uint256 domainId) external view returns (address);
+    /// @return owner The owner of the `domainId` domain.
+    function ownerOf(uint256 domainId) external view returns (address owner);
 
     /// @notice Returns the number of domains the `owner` owns.
     /// @param owner The owner address.
     /// Throws an exception if `owner` is the zero address.
-    /// @return The number of domains the `owner` owns.
-    function balanceOf(address owner) external view returns (uint256);
+    /// @return balance The number of domains the `owner` owns.
+    function balanceOf(address owner) external view returns (uint256 balance);
 
     /// @notice Returns the account approved for the `domainId` domain.
     /// @param domainId Identifier of the domain.
     /// Throws an exception if the `domainId` domain does not exist.
-    /// @return The account approved for the `domainId` domain.
-    function getApproved(uint256 domainId) external view returns (address);
+    /// @return approved The account approved for the `domainId` domain.
+    function getApproved(uint256 domainId) external view returns (address approved);
 
     /// @notice Checks if the `operator` is allowed to manage all of the domains of `owner`.
     /// @dev Throws an exception if the `owner` or `operator` is the zero address.

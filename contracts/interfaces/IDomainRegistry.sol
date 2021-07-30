@@ -20,12 +20,12 @@ interface IDomainRegistry is IERC721 {
     /// @param domainId The domain identifier.
     /// @param prefix The string to concatenate to the domain.
     /// @param public_ indicates if the domain is public
-    /// @return The new domain identifier.
+    /// @return newDomainId The new domain identifier.
     function register(
         uint256 domainId,
         string calldata prefix,
         bool public_
-    ) external returns (uint256);
+    ) external returns (uint256 newDomainId);
 
     /// @notice Extends the duration of ownership over the `domainId` domain.
     /// @param domainId The domain identifier.
@@ -34,12 +34,12 @@ interface IDomainRegistry is IERC721 {
     /// @notice Returns the symbolic name of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain has not been registered.
     /// @param domainId The domain identifier.
-    /// @return The symbolic name of the `domainId` domain.
-    function nameOf(uint256 domainId) external view returns (string memory);
+    /// @return domainName The symbolic name of the `domainId` domain.
+    function nameOf(uint256 domainId) external view returns (string memory domainName);
 
     /// @notice Returns the identifier of the `name` domain.
     /// @dev Throws an exception if the `name` domain has not been registered.
     /// @param domainName The domain name.
-    /// @return The identifier of the `name` domain.
-    function idOf(string calldata domainName) external view returns (uint256);
+    /// @return domainId The identifier of the `name` domain.
+    function idOf(string calldata domainName) external view returns (uint256 domainId);
 }

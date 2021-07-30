@@ -8,6 +8,6 @@ interface IERC165 {
     /// @dev See https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified
     /// This function call must use less than 30,000 gas.
     /// @param interfaceId The interface identifier.
-    /// @return Whether the contracts implements the interface defined by `interfaceId`.
+    /// @return supported Whether the contracts implements the interface defined by `interfaceId`.
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
