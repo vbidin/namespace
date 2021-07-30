@@ -2,9 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IDomainRegistry.sol";
-import "./libraries/Domain.sol";
-import "./libraries/DomainOwner.sol";
-import "./libraries/Utility.sol";
+
+import "./libraries/DomainService.sol";
+import "./libraries/Utilities.sol";
+
+import "./structs/Domain.sol";
+import "./structs/DomainOwner.sol";
 
 // require & assert
 // emit events
@@ -14,58 +17,11 @@ import "./libraries/Utility.sol";
 /// @title Implementation of a registry of domain ownerships
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract DomainRegistry is IDomainRegistry {
-    mapping(string => uint256) private _ids;
+    mapping(uint256 => Domain) private _domains;
 
-    mapping(uint256 => Domain.State) private _domains;
+    mapping(address => DomainOwner) private _owners;
 
-    mapping(address => DomainOwner.State) private _owners;
-
-    /*
-    modifier domainExists(uint256 domainId) {
-        require(_exists(domainId), "domain does not exist");
-        _;
-    }
-
-    modifier isNotZeroAddress(address address_) {
-        require(!address_.isZero(), "address is zero");
-        _;
-    }
-
-    modifier areDifferentAddresses(address a, address b) {
-        require(a != b, "addresses are identical");
-        _;
-    }
-
-    modifier isNotEmpty(string calldata domainName) {
-        require(!domainName.isEmpty(), "domain name is empty");
-        _;
-    }
-
-    modifier doesNotContainPeriods(string calldata domainName) {
-        require(!domainName.containsPeriods(), "domain name contains periods");
-        _;
-    }
-
-    modifier isDomainOwner(uint256 domainId, address account) {
-        require(_isOwner(domainId, account), "address is not the owner");
-        _;
-    }
-
-    modifier isNotDomainOwner(uint256 domainId, address account) {
-        require(!_isOwner(domainId, account), "address is the owner");
-        _;
-    }
-
-    modifier domainIsPublic(uint256 domainId) {
-        require(_isPublic(domainId), "domain is not public");
-        _;
-    }
-
-    modifier domainIsNotPublic(uint256 domainId) {
-        require(!_isPublic(domainId), "domain is public");
-        _;
-    }
-    */
+    mapping(string => uint256) private _nameToId;
 
     constructor() {}
 
