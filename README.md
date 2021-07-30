@@ -1,6 +1,6 @@
 # Namespace - Smart Contracts
 
-[![CI](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml)
+[![ci](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@namespace-domains/contracts/latest.svg)](https://www.npmjs.com/package/@namespace-domains/contracts/v/latest)
 
 This repository contains the smart contracts that are used to create and manage Namespace domains and their associated records.
