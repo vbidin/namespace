@@ -52,7 +52,9 @@ interface IERC20 {
     /// @param spender -
     /// @param amount -
     /// @return success -
-    function approve(address spender, uint256 amount) external returns (bool success);
+    function approve(address spender, uint256 amount)
+        external
+        returns (bool success);
 
     /// @notice
     /// @dev

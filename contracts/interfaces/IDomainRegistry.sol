@@ -29,17 +29,24 @@ interface IDomainRegistry is IERC721 {
 
     /// @notice Extends the duration of ownership over the `domainId` domain.
     /// @param domainId The domain identifier.
-    function refresh(uint256 domainId) external;
+    /// @return timespan How long the domain ownership has been extended for.
+    function refresh(uint256 domainId) external returns (uint256 timespan);
 
     /// @notice Returns the symbolic name of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain has not been registered.
     /// @param domainId The domain identifier.
     /// @return domainName The symbolic name of the `domainId` domain.
-    function nameOf(uint256 domainId) external view returns (string memory domainName);
+    function nameOf(uint256 domainId)
+        external
+        view
+        returns (string memory domainName);
 
     /// @notice Returns the identifier of the `name` domain.
     /// @dev Throws an exception if the `name` domain has not been registered.
     /// @param domainName The domain name.
     /// @return domainId The identifier of the `name` domain.
-    function idOf(string calldata domainName) external view returns (uint256 domainId);
+    function idOf(string calldata domainName)
+        external
+        view
+        returns (uint256 domainId);
 }

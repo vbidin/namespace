@@ -2,59 +2,91 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IDomainRegistry.sol";
-
 import "./libraries/DomainService.sol";
 import "./libraries/Utilities.sol";
-
-import "./structs/Domain.sol";
-import "./structs/DomainOwner.sol";
-
-// require & assert
-// emit events
-// call and verify
-// add natspec
+import "./structs/DomainRegistryState.sol";
 
 /// @title Implementation of a registry of domain ownerships
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract DomainRegistry is IDomainRegistry {
-    mapping(uint256 => Domain) private _domains;
+    using Utilities for *;
+    using DomainService for Domain;
 
-    mapping(address => DomainOwner) private _owners;
+    DomainRegistryState private _state;
 
-    mapping(string => uint256) private _nameToId;
+    modifier domainExists(uint256 domainId) {
+        require(_state.domains[domainId].isCreated(), "domain does not exist");
+        _;
+    }
 
-    constructor() {}
+    modifier domainIsOwned(uint256 domainId, address owner) {
+        require(_state.domains[domainId].isOwner(owner), "domain is not owned");
+        _;
+    }
+
+    modifier domainIsPublic(uint256 domainId) {
+        require(_state.domains[domainId].isPublic(), "domain is not public");
+        _;
+    }
+
+    modifier addressIsNotZero(address a) {
+        require(!a.isZero(), "address is zero");
+        _;
+    }
+
+    modifier addressesAreNotEqual(address a, address b) {
+        require(a != b, "addresses are identical");
+        _;
+    }
+
+    modifier prefixIsNotEmpty(string calldata prefix) {
+        require(!prefix.isEmpty(), "prefix is empty");
+        _;
+    }
+
+    modifier prefixDoesNotContainPeriods(string calldata prefix) {
+        require(!prefix.containsPeriods(), "prefix contains periods");
+        _;
+    }
+
+    constructor() {
+        _registerRootDomain();
+    }
 
     /// @inheritdoc IDomainRegistry
     function register(
         uint256 domainId,
         string calldata prefix,
         bool public_
-    ) external override returns (uint256) {}
+    ) external override returns (uint256 newDomainId) {}
 
     /// @inheritdoc IDomainRegistry
-    function refresh(uint256 domainId) external override {}
+    function refresh(uint256 domainId)
+        external
+        override
+        returns (uint256 timespan)
+    {}
 
     /// @inheritdoc IERC721
     function transferFrom(
-        address to,
-        address from,
-        uint256 domainIds
+        address sender,
+        address recipient,
+        uint256 domainId
     ) external override {}
 
     /// @inheritdoc IERC721
     function safeTransferFrom(
-        address to,
-        address from,
+        address sender,
+        address recipient,
         uint256 domainId,
         bytes calldata data
     ) external override {}
 
     /// @inheritdoc IERC721
     function safeTransferFrom(
-        address to,
-        address from,
-        uint256 domainIds
+        address sender,
+        address recipient,
+        uint256 domainId
     ) external override {}
 
     /// @inheritdoc IERC721
@@ -125,5 +157,16 @@ contract DomainRegistry is IDomainRegistry {
             interfaceId == type(IDomainRegistry).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
             interfaceId == type(IERC165).interfaceId;
+    }
+
+    function _registerRootDomain() internal {
+        Domain storage rootDomain = _state.domains[_state.nextDomainId];
+        rootDomain.exists = true;
+        rootDomain.timestamp = block.timestamp;
+        rootDomain.name = "";
+        _state.nameToIdMapping[""] = _state.nextDomainId;
+        _state.nextDomainId += 1;
+
+        emit Transfer(address(0), address(0), 0);
     }
 }

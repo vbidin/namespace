@@ -5,6 +5,6 @@ struct Domain {
     bool exists;
     address owner;
     address approved;
-    // timestamp?
+    uint256 timestamp;
     string name;
 }
