@@ -6,7 +6,7 @@ import "./DomainOwner.sol";
 
 struct DomainRegistryState {
     uint256 nextDomainId;
+    mapping(string => uint256) domainIds;
     mapping(uint256 => Domain) domains;
     mapping(address => DomainOwner) owners;
-    mapping(string => uint256) nameToIdMapping;
 }

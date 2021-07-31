@@ -10,17 +10,20 @@ import "./structs/DomainRegistryState.sol";
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract DomainRegistry is IDomainRegistry {
     using Utilities for *;
-    using DomainService for Domain;
+    using DomainService for *;
 
     DomainRegistryState private _state;
 
-    modifier domainExists(uint256 domainId) {
+    modifier domainIdExists(uint256 domainId) {
         require(_state.domains[domainId].isCreated(), "domain does not exist");
         _;
     }
 
     modifier domainIsOwned(uint256 domainId, address owner) {
-        require(_state.domains[domainId].isOwner(owner), "domain is not owned");
+        require(
+            _state.domains[domainId].isOwnedBy(owner),
+            "domain is not owned"
+        );
         _;
     }
 
@@ -50,22 +53,50 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     constructor() {
-        _registerRootDomain();
+        _registerRootDomain(0, "");
     }
 
     /// @inheritdoc IDomainRegistry
-    function register(
-        uint256 domainId,
-        string calldata prefix,
-        bool public_
-    ) external override returns (uint256 newDomainId) {}
-
-    /// @inheritdoc IDomainRegistry
-    function refresh(uint256 domainId)
+    function create(uint256 domainId, string calldata prefix)
         external
         override
-        returns (uint256 timespan)
-    {}
+        domainIdExists(domainId)
+        prefixIsNotEmpty(prefix)
+        prefixDoesNotContainPeriods(prefix)
+        returns (uint256 subdomainId)
+    {
+        Domain storage domain = _state.domains[domainId];
+        require(
+            domain.isPublic() || domain.isOwnedBy(msg.sender),
+            "sender is not domain owner"
+        );
+
+        subdomainId = _state.nextDomainId++;
+        Domain storage subdomain = _state.domains[subdomainId];
+
+        subdomain.exists = true;
+        subdomain.timestamp = block.timestamp;
+        if (!domain.isRoot()) {
+            subdomain.owner = msg.sender;
+        }
+        if (domain.isRoot()) {
+            subdomain.name = string(abi.encodePacked(prefix, domain.name));
+        } else {
+            subdomain.name = string(abi.encodePacked(prefix, ".", domain.name));
+        }
+
+        mapping(string => uint256) storage map = _state.domainIds;
+        require(map[subdomain.name] == 0, "domain already exists");
+        map[subdomain.name] = subdomainId;
+    }
+
+    /// @inheritdoc IDomainRegistry
+    function claim(uint256 domainId) external override {
+        
+    }
+
+    /// @inheritdoc IDomainRegistry
+    function extend(uint256 domainId) external override {}
 
     /// @inheritdoc IERC721
     function transferFrom(
@@ -159,14 +190,18 @@ contract DomainRegistry is IDomainRegistry {
             interfaceId == type(IERC165).interfaceId;
     }
 
-    function _registerRootDomain() internal {
-        Domain storage rootDomain = _state.domains[_state.nextDomainId];
-        rootDomain.exists = true;
-        rootDomain.timestamp = block.timestamp;
-        rootDomain.name = "";
-        _state.nameToIdMapping[""] = _state.nextDomainId;
-        _state.nextDomainId += 1;
+    function _registerRootDomain(
+        uint256 rootDomainId,
+        string memory rootDomainName
+    ) internal {
+        _state.nextDomainId = rootDomainId + 1;
+        _state.domainIds[rootDomainName] = rootDomainId;
 
-        emit Transfer(address(0), address(0), 0);
+        Domain storage rootDomain = _state.domains[rootDomainId];
+        rootDomain.exists = true;
+        rootDomain.root = true;
+        rootDomain.name = rootDomainName;
+
+        emit Transfer(address(0), address(0), rootDomainId);
     }
 }

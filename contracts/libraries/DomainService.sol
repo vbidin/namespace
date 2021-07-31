@@ -6,21 +6,26 @@ import "../structs/Domain.sol";
 
 library DomainService {
     using Utilities for *;
+    using DomainService for *;
 
     function isCreated(Domain storage domain) internal view returns (bool) {
         return domain.exists;
     }
 
-    function isOwner(Domain storage domain, address owner)
+    function isRoot(Domain storage domain) internal view returns (bool) {
+        return domain.root;
+    }
+
+    function isPublic(Domain storage domain) internal view returns (bool) {
+        return domain.owner.isZero();
+    }
+
+    function isOwnedBy(Domain storage domain, address owner)
         internal
         view
         returns (bool)
     {
         return domain.owner == owner;
-    }
-
-    function isPublic(Domain storage domain) internal view returns (bool) {
-        return domain.owner.isZero();
     }
 
     function hasExpired(Domain storage domain, uint256 timespan)

@@ -6,31 +6,39 @@ import "./IERC721.sol";
 /// @title Interface of a registry of domain ownerships
 /// @notice Complies with the ERC-721 Non-Fungible Token Standard.
 interface IDomainRegistry is IERC721 {
-    /// @notice Registers a new domain.
-    /// @dev New domain names are the concatenation of the `prefix`, a period, and the `domainId` domain name.
-    /// The exception to this rule are top level domains, which are equal to the `prefix`.
-    /// Public domains can not be owned and can be used by anyone to register further domains.
-    /// Emits a {Transfer} event if a private domain was created.
+    /// @notice Creates a new subdomain by concatenating the `prefix` to the `domainId` domain name.
+    /// @dev Top level domains are always public and can not be owned.
+    /// Emits a {Transfer} event.
     /// Throws an exception if:
     /// - `domainId` domain does not exist.
-    /// - `prefix` is an empty string, or contains a period.
-    /// - `msg.sender` does not own the `domainId` domain and the domain is not public.
-    /// - the new domain name already exists.
-    /// - the new domain name is a top-level domain and is not public.
+    /// - `domainId` domain is not public and `msg.sender` does not own it.
+    /// - `prefix` is an empty string.
+    /// - `prefix` contains a period.
+    /// - the created subdomain already exists.
     /// @param domainId The domain identifier.
     /// @param prefix The string to concatenate to the domain.
-    /// @param public_ indicates if the domain is public
-    /// @return newDomainId The new domain identifier.
-    function register(
-        uint256 domainId,
-        string calldata prefix,
-        bool public_
-    ) external returns (uint256 newDomainId);
+    /// @return subdomainId The new domain identifier.
+    function create(uint256 domainId, string calldata prefix)
+        external
+        returns (uint256 subdomainId);
 
-    /// @notice Extends the duration of ownership over the `domainId` domain.
+    /// @notice Claims ownership over the `domainId` domain if it has expired.
+    /// @dev Emits a {Transfer} event.
+    /// Throws an exception if:
+    /// - `domainId` domain does not exist.
+    /// - `domainId` domain is public.
+    /// - `domainId` domain is already owned by `msg.sender`.
+    /// - `domainId` domain has not expired.
     /// @param domainId The domain identifier.
-    /// @return timespan How long the domain ownership has been extended for.
-    function refresh(uint256 domainId) external returns (uint256 timespan);
+    function claim(uint256 domainId) external;
+
+    /// @notice Extends the duration of ownership of the `domainId` domain.
+    /// @dev Throws an exception if:
+    /// - `domainId` domain does not exist.
+    /// - `domainId` domain is public.
+    /// - `domainId` domain is not owned by `msg.sender`.
+    /// @param domainId The domain identifier.
+    function extend(uint256 domainId) external;
 
     /// @notice Returns the symbolic name of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain has not been registered.
