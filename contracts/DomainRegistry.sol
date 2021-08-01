@@ -22,8 +22,36 @@ contract DomainRegistry is IDomainRegistry {
     mapping(uint256 => Domain) internal _domains;
     mapping(address => DomainOwner) internal _owners;
 
+    modifier addressIsNotZero(address a) {
+        require(!a.isZero(), "address is zero");
+        _;
+    }
+
+    modifier addressesAreNotEqual(address a, address b) {
+        require(a != b, "addresses are equal");
+        _;
+    }
+
+    modifier prefixIsNotEmpty(string calldata prefix) {
+        require(!prefix.isEmpty(), "prefix is empty");
+        _;
+    }
+
+    modifier prefixDoesNotContainPeriods(string calldata prefix) {
+        require(!prefix.containsPeriods(), "prefix contains periods");
+        _;
+    }
+
     modifier domainIdExists(uint256 domainId) {
         require(_domains[domainId].isCreated(), "domain does not exist");
+        _;
+    }
+
+    modifier domainNameExists(string calldata domainName) {
+        require(
+            !_domainIds[domainName].isZero() || domainName.isEmpty(),
+            "domain does not exist"
+        );
         _;
     }
 
@@ -80,33 +108,23 @@ contract DomainRegistry is IDomainRegistry {
 
     modifier domainCanBeTransferredByCaller(uint256 domainId) {
         Domain storage domain = _domains[domainId];
-        DomainOwner storage domainOwner = _owners[domain.owner];
+        DomainOwner storage owner = _owners[domain.owner];
         require(
             domain.isOwnedBy(msg.sender) ||
                 domain.hasApproved(msg.sender) ||
-                domainOwner.hasAuthorized(msg.sender),
-            "domain is not transferrable by caller"
+                owner.hasAuthorized(msg.sender),
+            "caller can not transfer domain"
         );
         _;
     }
 
-    modifier addressIsNotZero(address a) {
-        require(!a.isZero(), "address is zero");
-        _;
-    }
-
-    modifier addressesAreNotEqual(address a, address b) {
-        require(a != b, "addresses are identical");
-        _;
-    }
-
-    modifier prefixIsNotEmpty(string calldata prefix) {
-        require(!prefix.isEmpty(), "prefix is empty");
-        _;
-    }
-
-    modifier prefixDoesNotContainPeriods(string calldata prefix) {
-        require(!prefix.containsPeriods(), "prefix contains periods");
+    modifier domainCanBeApprovedByCaller(uint256 domainId) {
+        Domain storage domain = _domains[domainId];
+        DomainOwner storage owner = _owners[domain.owner];
+        require(
+            domain.isOwnedBy(msg.sender) || owner.hasAuthorized(msg.sender),
+            "caller can not approve domain"
+        );
         _;
     }
 
@@ -185,61 +203,87 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     /// @inheritdoc IERC721
-    function approve(address approved, uint256 domainId) external override {}
-
-    /// @inheritdoc IERC721
-    function setApprovalForAll(address operator, bool approved)
+    function approve(address approved, uint256 domainId)
         external
         override
-    {}
+        domainIdExists(domainId)
+        domainIsNotPublic(domainId)
+        domainCanBeApprovedByCaller(domainId)
+    {
+        _approveDomain(approved, domainId);
+    }
+
+    /// @inheritdoc IERC721
+    function setApprovalForAll(address operator, bool enabled)
+        external
+        override
+        addressIsNotZero(operator)
+        addressesAreNotEqual(msg.sender, operator)
+    {
+        _updateOperator(operator, enabled);
+    }
 
     /// @inheritdoc IDomainRegistry
     function nameOf(uint256 domainId)
         external
         view
         override
+        domainIdExists(domainId)
         returns (string memory)
-    {}
+    {
+        return _domains[domainId].name;
+    }
 
     /// @inheritdoc IDomainRegistry
-    function idOf(string calldata name)
+    function idOf(string calldata domainName)
         external
         view
         override
+        domainNameExists(domainName)
         returns (uint256)
-    {}
+    {
+        return _domainIds[domainName];
+    }
 
     /// @inheritdoc IERC721
     function ownerOf(uint256 domainId)
         external
         view
         override
+        domainIdExists(domainId)
         returns (address)
-    {}
+    {
+        return _domains[domainId].owner;
+    }
 
     /// @inheritdoc IERC721
-    function balanceOf(address owner)
-        external
-        view
-        override
-        returns (uint256)
-    {}
+    function balanceOf(address owner) external view override returns (uint256) {
+        return _owners[owner].numberOfDomains;
+    }
 
     /// @inheritdoc IERC721
     function getApproved(uint256 domainId)
         external
         view
         override
+        domainIdExists(domainId)
         returns (address)
-    {}
+    {
+        return _domains[domainId].approved;
+    }
 
     /// @inheritdoc IERC721
     function isApprovedForAll(address owner, address operator)
         external
         view
         override
+        addressIsNotZero(owner)
+        addressIsNotZero(operator)
+        addressesAreNotEqual(owner, operator)
         returns (bool)
-    {}
+    {
+        return _owners[owner].operators[operator];
+    }
 
     /// @inheritdoc IERC165
     function supportsInterface(bytes4 interfaceId)
@@ -302,6 +346,7 @@ contract DomainRegistry is IDomainRegistry {
         internal
         addressIsNotZero(sender)
         addressIsNotZero(recipient)
+        addressesAreNotEqual(sender, recipient)
         domainIdExists(domainId)
         domainIsOwnedBySender(domainId, sender)
         domainIsNotPublic(domainId)
@@ -316,7 +361,7 @@ contract DomainRegistry is IDomainRegistry {
         address recipient,
         uint256 domainId
     ) internal {
-        _approveDomain(domainId, address(0));
+        _approveDomain(address(0), domainId);
         _domains[domainId].transfer(
             _owners[sender],
             _getDomainOwner(recipient)
@@ -346,9 +391,15 @@ contract DomainRegistry is IDomainRegistry {
         }
     }
 
-    function _approveDomain(uint256 domainId, address approved) internal {
+    function _approveDomain(address approved, uint256 domainId) internal {
         _domains[domainId].approve(approved);
 
         emit Approval(_domains[domainId].owner, approved, domainId);
+    }
+
+    function _updateOperator(address operator, bool enabled) internal {
+        _getDomainOwner(msg.sender).operators[operator] = enabled;
+
+        emit ApprovalForAll(msg.sender, operator, enabled);
     }
 }
