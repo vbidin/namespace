@@ -38,7 +38,7 @@ interface IDomainRegistry is IERC721 {
     /// - `domainId` domain is public.
     /// - `domainId` domain is not owned by `msg.sender`.
     /// @param domainId The domain identifier.
-    function extend(uint256 domainId) external;
+    function refresh(uint256 domainId) external;
 
     /// @notice Returns the symbolic name of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain has not been registered.

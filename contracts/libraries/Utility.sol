@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-library Utilities {
+library Utility {
     function isZero(uint256 n) internal pure returns (bool) {
         return n == 0;
     }
