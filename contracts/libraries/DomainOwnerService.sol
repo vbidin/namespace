@@ -24,17 +24,4 @@ library DomainOwnerService {
     {
         return owner.operators[operator];
     }
-
-    function isContract(DomainOwner storage owner)
-        internal
-        view
-        returns (bool)
-    {
-        address id = owner.id;
-        uint32 size;
-        assembly {
-            size := extcodesize(id)
-        }
-        return size > 0;
-    }
 }

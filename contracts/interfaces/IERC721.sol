@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./IERC165.sol";
+import "./IERC721Receiver.sol";
 
 /// @title Interface of the ERC-721 standard
 /// @dev See https://eips.ethereum.org/EIPS/eip-721

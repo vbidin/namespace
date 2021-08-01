@@ -330,7 +330,21 @@ contract DomainRegistry is IDomainRegistry {
         address recipient,
         uint256 domainId,
         bytes memory data
-    ) internal {}
+    ) internal {
+        if (recipient.isContract()) {
+            IERC721Receiver receiver = IERC721Receiver(recipient);
+            bytes4 selector = receiver.onERC721Received(
+                msg.sender,
+                sender,
+                domainId,
+                data
+            );
+            require(
+                selector == receiver.onERC721Received.selector,
+                "domain transfer failed"
+            );
+        }
+    }
 
     function _approveDomain(uint256 domainId, address approved) internal {
         _domains[domainId].approve(approved);

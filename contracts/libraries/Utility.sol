@@ -2,6 +2,14 @@
 pragma solidity ^0.8.0;
 
 library Utility {
+    function isContract(address a) internal view returns (bool) {
+        uint32 size;
+        assembly {
+            size := extcodesize(a)
+        }
+        return size > 0;
+    }
+
     function isZero(uint256 n) internal pure returns (bool) {
         return n == 0;
     }
