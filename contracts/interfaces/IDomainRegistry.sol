@@ -6,6 +6,12 @@ import "./IERC721.sol";
 /// @title Interface of a registry of domain ownerships
 /// @notice Complies with the ERC-721 Non-Fungible Token Standard.
 interface IDomainRegistry is IERC721 {
+    /// @notice
+    /// @dev
+    /// @param domainId -
+    /// @param timestamp -
+    event Refresh(uint256 indexed domainId, uint256 timestamp);
+
     /// @notice Creates a new domain by concatenating the `prefix` to the `parentDomainId` domain name.
     /// @dev Top level domains are always public and can not be owned.
     /// Emits a {Transfer} event.
