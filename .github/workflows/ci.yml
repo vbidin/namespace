@@ -32,7 +32,7 @@ jobs:
       - run: yarn test:unit # include code coverage
       - run: yarn test:gas
 
-  security:
+  scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
