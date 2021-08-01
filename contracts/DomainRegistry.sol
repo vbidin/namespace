@@ -180,7 +180,7 @@ contract DomainRegistry is IDomainRegistry {
         address recipient,
         uint256 domainId
     ) external override {
-        _transferDomain(sender, recipient, domainId);
+        _guardedTransferDomain(sender, recipient, domainId);
     }
 
     /// @inheritdoc IERC721
@@ -190,7 +190,8 @@ contract DomainRegistry is IDomainRegistry {
         uint256 domainId,
         bytes calldata data
     ) external override {
-        _transferDomainAndCheckRecipient(sender, recipient, domainId, data);
+        _guardedTransferDomain(sender, recipient, domainId);
+        _checkRecipient(sender, recipient, domainId, data);
     }
 
     /// @inheritdoc IERC721
@@ -199,7 +200,8 @@ contract DomainRegistry is IDomainRegistry {
         address recipient,
         uint256 domainId
     ) external override {
-        _transferDomainAndCheckRecipient(sender, recipient, domainId, "");
+        _guardedTransferDomain(sender, recipient, domainId);
+        _checkRecipient(sender, recipient, domainId, "");
     }
 
     /// @inheritdoc IERC721
@@ -337,11 +339,10 @@ contract DomainRegistry is IDomainRegistry {
         emit Transfer(address(0), owner.id, childDomainId);
     }
 
-    function _transferDomainAndCheckRecipient(
+    function _guardedTransferDomain(
         address sender,
         address recipient,
-        uint256 domainId,
-        bytes memory data
+        uint256 domainId
     )
         internal
         addressIsNotZero(sender)
@@ -353,7 +354,6 @@ contract DomainRegistry is IDomainRegistry {
         domainCanBeTransferredByCaller(domainId)
     {
         _transferDomain(sender, recipient, domainId);
-        _checkRecipient(sender, recipient, domainId, data);
     }
 
     function _transferDomain(
