@@ -2,6 +2,10 @@
 pragma solidity ^0.8.0;
 
 library Utilities {
+    function isZero(uint256 n) internal pure returns (bool) {
+        return n == 0;
+    }
+
     function isZero(address a) internal pure returns (bool) {
         return a == address(0);
     }

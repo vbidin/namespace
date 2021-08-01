@@ -6,21 +6,21 @@ import "./IERC721.sol";
 /// @title Interface of a registry of domain ownerships
 /// @notice Complies with the ERC-721 Non-Fungible Token Standard.
 interface IDomainRegistry is IERC721 {
-    /// @notice Creates a new subdomain by concatenating the `prefix` to the `domainId` domain name.
+    /// @notice Creates a new domain by concatenating the `prefix` to the `parentDomainId` domain name.
     /// @dev Top level domains are always public and can not be owned.
     /// Emits a {Transfer} event.
     /// Throws an exception if:
-    /// - `domainId` domain does not exist.
-    /// - `domainId` domain is not public and `msg.sender` does not own it.
+    /// - `parentDomainId` domain does not exist.
+    /// - `parentDomainId` domain is not public and `msg.sender` does not own it.
     /// - `prefix` is an empty string.
     /// - `prefix` contains a period.
-    /// - the created subdomain already exists.
-    /// @param domainId The domain identifier.
+    /// -  the child domain already exists.
+    /// @param parentDomainId The domain identifier.
     /// @param prefix The string to concatenate to the domain.
-    /// @return subdomainId The new domain identifier.
-    function create(uint256 domainId, string calldata prefix)
+    /// @return childDomainId The domain identifier of the newly created domain.
+    function create(uint256 parentDomainId, string calldata prefix)
         external
-        returns (uint256 subdomainId);
+        returns (uint256 childDomainId);
 
     /// @notice Claims ownership over the `domainId` domain if it has expired.
     /// @dev Emits a {Transfer} event.

@@ -8,6 +8,8 @@ library DomainService {
     using Utilities for *;
     using DomainService for *;
 
+    string internal constant _SEPARATOR = ".";
+
     function isCreated(Domain storage domain) internal view returns (bool) {
         return domain.exists;
     }
@@ -34,5 +36,29 @@ library DomainService {
         returns (bool)
     {
         return block.timestamp - domain.timestamp > timespan;
+    }
+
+    function getChildDomainOwner(Domain storage domain, address owner)
+        internal
+        view
+        returns (address)
+    {
+        if (domain.isRoot()) {
+            return address(0);
+        } else {
+            return owner;
+        }
+    }
+
+    function getChildDomainName(Domain storage domain, string calldata prefix)
+        internal
+        view
+        returns (string memory)
+    {
+        if (domain.isRoot()) {
+            return string(abi.encodePacked(prefix, domain.name));
+        } else {
+            return string(abi.encodePacked(prefix, _SEPARATOR, domain.name));
+        }
     }
 }

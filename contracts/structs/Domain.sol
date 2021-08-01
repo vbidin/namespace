@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 struct Domain {
-    bool exists;
     bool root;
+    bool exists;
+    uint256 timestamp;
     address owner;
     address approved;
-    uint256 timestamp;
     string name;
 }

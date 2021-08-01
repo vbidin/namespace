@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import "./interfaces/IDomainRegistry.sol";
 import "./libraries/DomainService.sol";
 import "./libraries/Utilities.sol";
-import "./structs/DomainRegistryState.sol";
+import "./structs/Domain.sol";
+import "./structs/DomainOwner.sol";
 
 /// @title Implementation of a registry of domain ownerships
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
@@ -12,23 +13,57 @@ contract DomainRegistry is IDomainRegistry {
     using Utilities for *;
     using DomainService for *;
 
-    DomainRegistryState private _state;
+    uint256 internal _nextDomainId;
+    uint256 internal _domainDuration; // replace with protocol parameters
+    mapping(string => uint256) internal _domainIds;
+    mapping(uint256 => Domain) internal _domains;
+    mapping(address => DomainOwner) internal _owners;
 
     modifier domainIdExists(uint256 domainId) {
-        require(_state.domains[domainId].isCreated(), "domain does not exist");
-        _;
-    }
-
-    modifier domainIsOwned(uint256 domainId, address owner) {
-        require(
-            _state.domains[domainId].isOwnedBy(owner),
-            "domain is not owned"
-        );
+        require(_domains[domainId].isCreated(), "domain does not exist");
         _;
     }
 
     modifier domainIsPublic(uint256 domainId) {
-        require(_state.domains[domainId].isPublic(), "domain is not public");
+        require(_domains[domainId].isPublic(), "domain is not public");
+        _;
+    }
+
+    modifier domainIsNotPublic(uint256 domainId) {
+        require(_domains[domainId].isPublic(), "domain is public");
+        _;
+    }
+
+    modifier domainIsOwnedBySender(uint256 domainId, address sender) {
+        require(
+            _domains[domainId].isOwnedBy(sender),
+            "domain is not owned by sender"
+        );
+        _;
+    }
+
+    modifier domainIsNotOwnedBySender(uint256 domainId, address sender) {
+        require(
+            !_domains[domainId].isOwnedBy(sender),
+            "domain is owned by sender"
+        );
+        _;
+    }
+
+    modifier domainCanBeCreatedBySender(uint256 domainId, address sender) {
+        Domain storage domain = _domains[domainId];
+        require(
+            domain.isPublic() || domain.isOwnedBy(sender),
+            "domain is not owned by sender"
+        );
+        _;
+    }
+
+    modifier domainHasExpired(uint256 domainId, uint256 duration) {
+        require(
+            _domains[domainId].hasExpired(duration),
+            "domain has not expired"
+        );
         _;
     }
 
@@ -54,56 +89,82 @@ contract DomainRegistry is IDomainRegistry {
 
     constructor() {
         _registerRootDomain(0, "");
+        _domainDuration = 31536000; // 365 days in seconds
     }
 
     /// @inheritdoc IDomainRegistry
-    function create(uint256 domainId, string calldata prefix)
+    function create(uint256 parentDomainId, string calldata prefix)
+        external
+        override
+        domainIdExists(parentDomainId)
+        domainCanBeCreatedBySender(parentDomainId, msg.sender)
+        prefixIsNotEmpty(prefix)
+        prefixDoesNotContainPeriods(prefix)
+        returns (uint256 childDomainId)
+    {
+        childDomainId = _nextDomainId++;
+
+        Domain storage parentDomain = _domains[parentDomainId];
+        Domain storage childDomain = _domains[childDomainId];
+
+        childDomain.exists = true;
+        childDomain.timestamp = block.timestamp;
+        childDomain.owner = parentDomain.getChildDomainOwner(msg.sender);
+        childDomain.name = parentDomain.getChildDomainName(prefix);
+
+        require(_domainIds[childDomain.name].isZero(), "domain already exists");
+        _domainIds[childDomain.name] = childDomainId;
+
+        if (!childDomain.owner.isZero()) {
+            _owners[childDomain.owner].numberOfDomains++;
+        }
+
+        emit Transfer(address(0), childDomain.owner, childDomainId);
+    }
+
+    /// @inheritdoc IDomainRegistry
+    function claim(uint256 domainId)
         external
         override
         domainIdExists(domainId)
-        prefixIsNotEmpty(prefix)
-        prefixDoesNotContainPeriods(prefix)
-        returns (uint256 subdomainId)
+        domainIsNotPublic(domainId)
+        domainIsNotOwnedBySender(domainId, msg.sender)
+        domainHasExpired(domainId, _domainDuration)
     {
-        Domain storage domain = _state.domains[domainId];
-        require(
-            domain.isPublic() || domain.isOwnedBy(msg.sender),
-            "sender is not domain owner"
-        );
+        Domain storage domain = _domains[domainId];
+        address oldOwner = domain.owner;
+        domain.owner = msg.sender;
+        domain.timestamp = block.timestamp;
 
-        subdomainId = _state.nextDomainId++;
-        Domain storage subdomain = _state.domains[subdomainId];
-
-        subdomain.exists = true;
-        subdomain.timestamp = block.timestamp;
-        if (!domain.isRoot()) {
-            subdomain.owner = msg.sender;
-        }
-        if (domain.isRoot()) {
-            subdomain.name = string(abi.encodePacked(prefix, domain.name));
-        } else {
-            subdomain.name = string(abi.encodePacked(prefix, ".", domain.name));
-        }
-
-        mapping(string => uint256) storage map = _state.domainIds;
-        require(map[subdomain.name] == 0, "domain already exists");
-        map[subdomain.name] = subdomainId;
+        emit Transfer(oldOwner, domain.owner, domainId);
     }
 
     /// @inheritdoc IDomainRegistry
-    function claim(uint256 domainId) external override {
-        
+    function extend(uint256 domainId)
+        external
+        override
+        domainIdExists(domainId)
+        domainIsNotPublic(domainId)
+        domainIsOwnedBySender(domainId, msg.sender)
+    {
+        Domain storage domain = _domains[domainId];
+        domain.timestamp = block.timestamp;
     }
-
-    /// @inheritdoc IDomainRegistry
-    function extend(uint256 domainId) external override {}
 
     /// @inheritdoc IERC721
     function transferFrom(
         address sender,
         address recipient,
         uint256 domainId
-    ) external override {}
+    )
+        external
+        override
+        addressIsNotZero(sender)
+        domainIsOwnedBySender(domainId, sender)
+        addressIsNotZero(recipient)
+        domainIdExists(domainId)
+        domainIsNotPublic(domainId)
+    {}
 
     /// @inheritdoc IERC721
     function safeTransferFrom(
@@ -194,10 +255,10 @@ contract DomainRegistry is IDomainRegistry {
         uint256 rootDomainId,
         string memory rootDomainName
     ) internal {
-        _state.nextDomainId = rootDomainId + 1;
-        _state.domainIds[rootDomainName] = rootDomainId;
+        _nextDomainId = rootDomainId + 1;
+        _domainIds[rootDomainName] = rootDomainId;
 
-        Domain storage rootDomain = _state.domains[rootDomainId];
+        Domain storage rootDomain = _domains[rootDomainId];
         rootDomain.exists = true;
         rootDomain.root = true;
         rootDomain.name = rootDomainName;
