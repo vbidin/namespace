@@ -15,7 +15,10 @@ contract DomainRegistry is IDomainRegistry {
     using DomainService for *;
     using DomainOwnerService for *;
 
-    uint256 internal _domainDuration; // replace with protocol parameters
+    address internal constant _ZERO_ADDRESS = address(0);
+    // replace with protocol parameters and continuous governance
+    uint256 internal constant _DOMAIN_DURATION = 31536000; // 365 days in seconds
+
     uint256 internal _nextDomainId;
 
     mapping(string => uint256) internal _domainIds;
@@ -132,7 +135,6 @@ contract DomainRegistry is IDomainRegistry {
         _createRootDomain();
         _createZeroAddress();
 
-        _domainDuration = 31536000; // 365 days in seconds
         _nextDomainId = 1;
     }
 
@@ -147,7 +149,13 @@ contract DomainRegistry is IDomainRegistry {
         returns (uint256 childDomainId)
     {
         childDomainId = _nextDomainId++;
-        _createSubdomain(parentDomainId, childDomainId, msg.sender, prefix);
+        _createSubdomain(parentDomainId, childDomainId, prefix);
+        _transferDomain(
+            _ZERO_ADDRESS,
+            _domains[parentDomainId].isRoot() ? _ZERO_ADDRESS : msg.sender,
+            childDomainId
+        );
+        _refreshDomain(childDomainId);
     }
 
     /// @inheritdoc IDomainRegistry
@@ -157,10 +165,10 @@ contract DomainRegistry is IDomainRegistry {
         domainIdExists(domainId)
         domainIsNotPublic(domainId)
         domainIsNotOwnedByCaller(domainId)
-        domainHasExpired(domainId, _domainDuration)
+        domainHasExpired(domainId, _DOMAIN_DURATION)
     {
-        _domains[domainId].refresh();
         _transferDomain(_domains[domainId].owner, msg.sender, domainId);
+        _refreshDomain(domainId);
     }
 
     /// @inheritdoc IDomainRegistry
@@ -171,7 +179,7 @@ contract DomainRegistry is IDomainRegistry {
         domainIsNotPublic(domainId)
         domainIsOwnedByCaller(domainId)
     {
-        _domains[domainId].refresh();
+        _refreshDomain(domainId);
     }
 
     /// @inheritdoc IERC721
@@ -306,7 +314,7 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     function _createZeroAddress() internal {
-        _owners[address(0)].exists = true;
+        _owners[_ZERO_ADDRESS].exists = true;
     }
 
     function _getDomainOwner(address id)
@@ -322,21 +330,17 @@ contract DomainRegistry is IDomainRegistry {
     function _createSubdomain(
         uint256 parentDomainId,
         uint256 childDomainId,
-        address caller,
         string calldata prefix
     ) internal {
         Domain storage parentDomain = _domains[parentDomainId];
         Domain storage childDomain = _domains[childDomainId];
-        DomainOwner storage owner = _getDomainOwner(
-            parentDomain.isRoot() ? address(0) : caller
-        );
+        DomainOwner storage owner = _owners[_ZERO_ADDRESS];
         string memory name = parentDomain.getChildDomainName(prefix);
 
-        childDomain.create(childDomainId, owner, name);
+        childDomain.create(childDomainId, name, owner);
+
         require(_domainIds[name].isZero(), "domain already exists");
         _domainIds[name] = childDomainId;
-
-        emit Transfer(address(0), owner.id, childDomainId);
     }
 
     function _guardedTransferDomain(
@@ -361,11 +365,14 @@ contract DomainRegistry is IDomainRegistry {
         address recipient,
         uint256 domainId
     ) internal {
-        _approveDomain(address(0), domainId);
-        _domains[domainId].transfer(
-            _owners[sender],
-            _getDomainOwner(recipient)
-        );
+        _approveDomain(_ZERO_ADDRESS, domainId);
+
+        if (sender != recipient) {
+            _domains[domainId].transfer(
+                _owners[sender],
+                _getDomainOwner(recipient)
+            );
+        }
 
         emit Transfer(sender, recipient, domainId);
     }
@@ -391,14 +398,23 @@ contract DomainRegistry is IDomainRegistry {
         }
     }
 
-    function _approveDomain(address approved, uint256 domainId) internal {
-        _domains[domainId].approve(approved);
+    function _refreshDomain(uint256 domainId) internal {
+        Domain storage domain = _domains[domainId];
+        domain.refresh();
 
-        emit Approval(_domains[domainId].owner, approved, domainId);
+        emit Refresh(domainId, domain.timestamp);
+    }
+
+    function _approveDomain(address approved, uint256 domainId) internal {
+        Domain storage domain = _domains[domainId];
+        domain.approve(approved);
+
+        emit Approval(domain.owner, approved, domainId);
     }
 
     function _updateOperator(address operator, bool enabled) internal {
-        _getDomainOwner(msg.sender).operators[operator] = enabled;
+        DomainOwner storage owner = _getDomainOwner(msg.sender);
+        owner.operators[operator] = enabled;
 
         emit ApprovalForAll(msg.sender, operator, enabled);
     }

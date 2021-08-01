@@ -16,15 +16,14 @@ library DomainService {
     function create(
         Domain storage domain,
         uint256 id,
-        DomainOwner storage owner,
-        string memory name
+        string memory name,
+        DomainOwner storage owner
     ) internal {
         domain.exists = true;
         domain.id = id;
+        domain.name = name;
         domain.owner = owner.id;
         owner.numberOfDomains += 1;
-        domain.name = name;
-        domain.refresh();
     }
 
     function transfer(
@@ -37,12 +36,12 @@ library DomainService {
         recipient.numberOfDomains += 1;
     }
 
-    function approve(Domain storage domain, address approved) internal {
-        domain.approved = approved;
-    }
-
     function refresh(Domain storage domain) internal {
         domain.timestamp = block.timestamp;
+    }
+
+    function approve(Domain storage domain, address approved) internal {
+        domain.approved = approved;
     }
 
     function isCreated(Domain storage domain) internal view returns (bool) {
