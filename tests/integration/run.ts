@@ -1,8 +1,15 @@
 import { getContract } from "./utility";
 
 async function main() {
+  const options = { gasLimit: 1000000 };
   const domainRegistry = await getContract("DomainRegistry");
-  await domainRegistry.idOf("google.com");
+
+  await (await domainRegistry.create(0, "org", options)).wait();
+  await (await domainRegistry.create(1, "ethereum", options)).wait();
+
+  const domainId = await domainRegistry.idOf("ethereum.org");
+  const owner = await domainRegistry.ownerOf(domainId);
+  const balance = await domainRegistry.balanceOf(owner);
 }
 
 main()
