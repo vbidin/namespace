@@ -1,18 +1,20 @@
 import { ethers } from "hardhat";
-import { constants, Signer } from "ethers";
+import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
 
 describe("DomainRegistry", () => {
+  const DOMAIN_DURATION = 31536000;
+
+  let factory: ContractFactory;
   let registry: DomainRegistry;
   let main: Signer;
   let other: Signer;
 
   beforeEach(async () => {
     [main, other] = await ethers.getSigners();
-    const factory = await ethers.getContractFactory("DomainRegistry");
-    registry = (await factory.deploy()) as DomainRegistry;
-    await registry.deployed();
+    factory = await ethers.getContractFactory("DomainRegistry");
+    registry = (await factory.deploy(DOMAIN_DURATION)) as DomainRegistry;
   });
 
   describe("when creating a new domain", async () => {
@@ -77,7 +79,6 @@ describe("DomainRegistry", () => {
 
     it("should succeed when domain name is extremely long", async () => {
       const name = "a".repeat(10000);
-
       await expect(await registry.create(0, name))
         .to.emit(registry, "Transfer")
         .withArgs(constants.AddressZero, constants.AddressZero, 1);
@@ -87,10 +88,44 @@ describe("DomainRegistry", () => {
     it("should succeed when domain names are very long and heavily nested", async () => {
       const name = "a".repeat(100);
       const levels = 100;
-
       for (let i = 0; i < levels; i++) {
         await registry.create(i, name);
       }
+      const domainName = await registry.nameOf(100);
+    });
+  });
+
+  describe("when claiming an existing domain", async () => {
+    it("should fail when domain does not exist", async () => {
+      await expect(registry.claim(1337)).to.be.revertedWith(
+        "domain does not exist"
+      );
+    });
+    it("should fail when domain is public", async () => {
+      await registry.create(0, "org");
+      await expect(registry.claim(1)).to.be.revertedWith("domain is public");
+    });
+    it("should fail when domain is owned by the caller", async () => {
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+      await expect(registry.claim(2)).to.be.revertedWith(
+        "domain is owned by caller"
+      );
+    });
+    it("should fail when domain is not owned by the caller and has not expired", async () => {
+      await registry.create(0, "org");
+      await registry.connect(other).create(1, "ethereum");
+      await expect(registry.claim(2)).to.be.revertedWith(
+        "domain has not expired"
+      );
+    });
+    it("should succeed when domain is not owned by the caller and has expired", async () => {
+      registry = (await factory.deploy(0)) as DomainRegistry;
+      await registry.create(0, "org");
+      await registry.connect(other).create(1, "ethereum");
+      await expect(registry.claim(2))
+        .to.emit(registry, "Transfer")
+        .withArgs(await other.getAddress(), await main.getAddress(), 2);
     });
   });
 });
