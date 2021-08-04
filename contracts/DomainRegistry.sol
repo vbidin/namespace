@@ -17,7 +17,7 @@ contract DomainRegistry is IDomainRegistry {
 
     address internal constant _ZERO_ADDRESS = address(0);
     // replace with protocol parameters and continuous governance
-    uint256 internal constant _DOMAIN_DURATION = 31536000; // 365 days in seconds
+    uint256 internal immutable _DOMAIN_DURATION;
 
     uint256 internal _nextDomainId;
 
@@ -131,11 +131,12 @@ contract DomainRegistry is IDomainRegistry {
         _;
     }
 
-    constructor() {
+    constructor(uint256 domainDuration) {
         _createRootDomain();
         _createZeroAddress();
 
         _nextDomainId = 1;
+        _DOMAIN_DURATION = domainDuration;
     }
 
     /// @inheritdoc IDomainRegistry
