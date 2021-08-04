@@ -64,7 +64,7 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     modifier domainIsNotPublic(uint256 domainId) {
-        require(_domains[domainId].isPublic(), "domain is public");
+        require(!_domains[domainId].isPublic(), "domain is public");
         _;
     }
 
