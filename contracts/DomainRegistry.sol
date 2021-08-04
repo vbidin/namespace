@@ -310,7 +310,6 @@ contract DomainRegistry is IDomainRegistry {
 
     function _createRootDomain() internal {
         _domains[0].exists = true;
-        _domainIds[""] = 0;
     }
 
     function _createZeroAddress() internal {
