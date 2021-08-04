@@ -130,8 +130,7 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     constructor(uint256 domainDuration) {
-        _DOMAIN_DURATION = domainDuration;
-
+        _domainDuration = domainDuration;
         _domains[0].exists = true;
         _owners[_ZERO_ADDRESS].exists = true;
         _nextDomainId = 1;
@@ -164,7 +163,7 @@ contract DomainRegistry is IDomainRegistry {
         domainIdExists(domainId)
         domainIsNotPublic(domainId)
         domainIsNotOwnedByCaller(domainId)
-        domainHasExpired(domainId, _DOMAIN_DURATION)
+        domainHasExpired(domainId, _domainDuration)
     {
         _transferDomain(_domains[domainId].owner, msg.sender, domainId);
         _refreshDomain(domainId);
