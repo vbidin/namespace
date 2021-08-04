@@ -7,5 +7,5 @@ export const DEPLOYMENT_OUTPUT =
 // contract names and their constructor arguments, deployed by insertion order
 // references to other contracts will be replaced with addresses during deployment
 export const CONTRACTS = new Map<string, any[]>();
-CONTRACTS.set("DomainRegistry", []);
+CONTRACTS.set("DomainRegistry", [31536000]);
 CONTRACTS.set("RecordStorage", ["DomainRegistry"]);
