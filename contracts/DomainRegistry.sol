@@ -16,8 +16,7 @@ contract DomainRegistry is IDomainRegistry {
     using DomainOwnerService for *;
 
     address internal constant _ZERO_ADDRESS = address(0);
-    uint256 internal immutable _DOMAIN_DURATION; // replace with protocol parameters and continuous governance
-
+    uint256 internal immutable _domainDuration; // replace with protocol parameters and continuous governance
     uint256 internal _nextDomainId;
 
     mapping(string => uint256) internal _domainIds;
