@@ -16,8 +16,7 @@ contract DomainRegistry is IDomainRegistry {
     using DomainOwnerService for *;
 
     address internal constant _ZERO_ADDRESS = address(0);
-    // replace with protocol parameters and continuous governance
-    uint256 internal immutable _DOMAIN_DURATION;
+    uint256 internal immutable _DOMAIN_DURATION; // replace with protocol parameters and continuous governance
 
     uint256 internal _nextDomainId;
 
@@ -132,11 +131,11 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     constructor(uint256 domainDuration) {
-        _createRootDomain();
-        _createZeroAddress();
-
-        _nextDomainId = 1;
         _DOMAIN_DURATION = domainDuration;
+
+        _domains[0].exists = true;
+        _owners[_ZERO_ADDRESS].exists = true;
+        _nextDomainId = 1;
     }
 
     /// @inheritdoc IDomainRegistry
@@ -307,14 +306,6 @@ contract DomainRegistry is IDomainRegistry {
             interfaceId == type(IDomainRegistry).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
             interfaceId == type(IERC165).interfaceId;
-    }
-
-    function _createRootDomain() internal {
-        _domains[0].exists = true;
-    }
-
-    function _createZeroAddress() internal {
-        _owners[_ZERO_ADDRESS].exists = true;
     }
 
     function _getDomainOwner(address id)
