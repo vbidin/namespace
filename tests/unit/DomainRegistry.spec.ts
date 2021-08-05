@@ -2,10 +2,11 @@ import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
+import { CONSTRUCTOR_ARGUMENTS } from "../../scripts/deployment/options";
 
-describe("DomainRegistry", () => {
-  const DOMAIN_DURATION = 31536000;
+const CONTRACT_NAME = "DomainRegistry";
 
+describe(CONTRACT_NAME, () => {
   let factory: ContractFactory;
   let registry: DomainRegistry;
   let main: Signer;
@@ -13,8 +14,10 @@ describe("DomainRegistry", () => {
 
   beforeEach(async () => {
     [main, other] = await ethers.getSigners();
-    factory = await ethers.getContractFactory("DomainRegistry");
-    registry = (await factory.deploy(DOMAIN_DURATION)) as DomainRegistry;
+    factory = await ethers.getContractFactory(CONTRACT_NAME);
+    registry = (await factory.deploy(
+      ...CONSTRUCTOR_ARGUMENTS.get(CONTRACT_NAME)!
+    )) as DomainRegistry;
   });
 
   describe("when creating a new domain", async () => {
@@ -101,10 +104,12 @@ describe("DomainRegistry", () => {
         "domain does not exist"
       );
     });
+
     it("should fail when domain is public", async () => {
       await registry.create(0, "org");
       await expect(registry.claim(1)).to.be.revertedWith("domain is public");
     });
+
     it("should fail when domain is owned by the caller", async () => {
       await registry.create(0, "org");
       await registry.create(1, "ethereum");
@@ -112,6 +117,7 @@ describe("DomainRegistry", () => {
         "domain is owned by caller"
       );
     });
+
     it("should fail when domain is not owned by the caller and has not expired", async () => {
       await registry.create(0, "org");
       await registry.connect(other).create(1, "ethereum");
@@ -119,6 +125,7 @@ describe("DomainRegistry", () => {
         "domain has not expired"
       );
     });
+    
     it("should succeed when domain is not owned by the caller and has expired", async () => {
       registry = (await factory.deploy(0)) as DomainRegistry;
       await registry.create(0, "org");
