@@ -8,7 +8,7 @@ async function main() {
   validate();
   const provider = getProvider((<any>hre.network.config).url);
   const signer = getSigner((<any>hre.config).privateKey, provider);
-  const contractAddresses = await deployAndVerify(
+  const contractAddresses = await deployAndVerifyContracts(
     CONSTRUCTOR_ARGUMENTS,
     signer
   );
@@ -37,33 +37,37 @@ function getSigner(privateKey: string, provider: providers.Provider): Signer {
   return new Wallet(privateKey, provider);
 }
 
-async function deployAndVerify(
-  contracts: Map<string, any[]>,
+async function deployAndVerifyContracts(
+  contracts: Map<string, any>,
   signer: Signer
 ): Promise<Map<string, string>> {
   const contractAddresses = new Map<string, string>();
   for (const contractName of contracts.keys()) {
-    const contract = await deploy(
+    const contract = await deployContract(
       contractName,
       contracts.get(contractName)!,
       signer
     );
     contractAddresses.set(contractName, contract.address);
     updateConstructorArguments(contracts, contractName, contract.address);
-    await verify(contract.address, contracts.get(contractName)!);
+    await verifyContract(contract.address, contracts.get(contractName)!);
   }
   return contractAddresses;
 }
 
-async function deploy(
+async function deployContract(
   contractName: string,
   constructorArguments: any[],
   signer: Signer
 ): Promise<Contract> {
   let factory = await ethers.getContractFactory(contractName);
   factory = factory.connect(signer);
-  const contract = await factory.deploy(...constructorArguments);
-  console.log(`deploying ${contractName}...`);
+  const contract = await factory.deploy(constructorArguments);
+  console.log(
+    `deploying ${contractName} with arguments: ${JSON.stringify(
+      constructorArguments
+    )}`
+  );
   console.log(`transaction hash: ${contract.deployTransaction.hash}`);
   await contract.deployed();
   console.log(`deployed on address: ${contract.address}`);
@@ -77,16 +81,23 @@ function updateConstructorArguments(
 ) {
   for (const contractName of contracts.keys()) {
     const constructorArguments = contracts.get(contractName)!;
-    for (let i = 0; i < constructorArguments.length; i++) {
-      if (constructorArguments[i] == deployedContractName) {
-        constructorArguments[i] = deployedContractAddress;
+    for (const argument in constructorArguments) {
+      let updated = false;
+      if (constructorArguments[argument] == deployedContractName) {
+        constructorArguments[argument] = deployedContractAddress;
+        updated = true;
+      }
+      if (updated) {
         console.log(`updated constructor arguments of ${contractName}`);
       }
     }
   }
 }
 
-async function verify(contractAddress: string, constructorArguments: any[]) {
+async function verifyContract(
+  contractAddress: string,
+  constructorArguments: any[]
+) {
   // TODO
 }
 

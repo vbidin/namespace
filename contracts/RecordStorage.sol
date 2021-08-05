@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./DomainRegistry.sol";
+import "./structs/RecordStorageOptions.sol";
 
 contract RecordStorage {
-    DomainRegistry private _registry;
+    IDomainRegistry internal _domainRegistry;
 
-    constructor(DomainRegistry registry) {
-        _registry = registry;
+    constructor(RecordStorageOptions memory options) {
+        _domainRegistry = options.domainRegistry;
     }
 }

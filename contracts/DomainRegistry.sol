@@ -7,6 +7,7 @@ import "./libraries/DomainOwnerService.sol";
 import "./libraries/Utility.sol";
 import "./structs/Domain.sol";
 import "./structs/DomainOwner.sol";
+import "./structs/DomainRegistryOptions.sol";
 
 /// @title Implementation of a registry of domain ownerships
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
@@ -129,8 +130,8 @@ contract DomainRegistry is IDomainRegistry {
         _;
     }
 
-    constructor(uint256 domainDuration) {
-        _domainDuration = domainDuration;
+    constructor(DomainRegistryOptions memory options) {
+        _domainDuration = options.domainDuration;
         _domains[0].exists = true;
         _owners[_ZERO_ADDRESS].exists = true;
         _nextDomainId = 1;

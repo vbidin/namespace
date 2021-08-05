@@ -2,11 +2,12 @@ import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
-import { CONSTRUCTOR_ARGUMENTS } from "../../scripts/deployment/options";
+import {
+  DOMAIN_REGISTRY,
+  CONSTRUCTOR_ARGUMENTS,
+} from "../../scripts/deployment/options";
 
-const CONTRACT_NAME = "DomainRegistry";
-
-describe(CONTRACT_NAME, () => {
+describe(DOMAIN_REGISTRY, () => {
   let factory: ContractFactory;
   let registry: DomainRegistry;
   let main: Signer;
@@ -14,9 +15,9 @@ describe(CONTRACT_NAME, () => {
 
   beforeEach(async () => {
     [main, other] = await ethers.getSigners();
-    factory = await ethers.getContractFactory(CONTRACT_NAME);
+    factory = await ethers.getContractFactory(DOMAIN_REGISTRY);
     registry = (await factory.deploy(
-      ...CONSTRUCTOR_ARGUMENTS.get(CONTRACT_NAME)!
+      CONSTRUCTOR_ARGUMENTS.get(DOMAIN_REGISTRY)!
     )) as DomainRegistry;
   });
 
@@ -125,9 +126,12 @@ describe(CONTRACT_NAME, () => {
         "domain has not expired"
       );
     });
-    
+
     it("should succeed when domain is not owned by the caller and has expired", async () => {
-      registry = (await factory.deploy(0)) as DomainRegistry;
+      const args = { ...CONSTRUCTOR_ARGUMENTS.get(DOMAIN_REGISTRY) };
+      args.domainDuration = 0;
+      registry = (await factory.deploy(args)) as DomainRegistry;
+
       await registry.create(0, "org");
       await registry.connect(other).create(1, "ethereum");
       await expect(registry.claim(2))
