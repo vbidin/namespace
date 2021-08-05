@@ -139,4 +139,33 @@ describe(DOMAIN_REGISTRY, () => {
         .withArgs(await other.getAddress(), await main.getAddress(), 2);
     });
   });
+
+  describe("when refreshing an existing domain", async () => {
+    it("should fail when domain does not exist", async () => {
+      await expect(registry.refresh(1337)).to.be.revertedWith(
+        "domain does not exist"
+      );
+    });
+
+    it("should fail when domain is public", async () => {
+      await registry.create(0, "org");
+      await expect(registry.refresh(1)).to.be.revertedWith("domain is public");
+    });
+
+    it("should fail when domain is not owned by the caller", async () => {
+      await registry.create(0, "org");
+      await registry.connect(other).create(1, "ethereum");
+      await expect(registry.refresh(2)).to.be.revertedWith(
+        "domain is not owned by caller"
+      );
+    });
+
+    it("should succeed when domain is owned by the caller", async () => {
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+      await expect(registry.refresh(2))
+        .to.be.emit(registry, "Refresh")
+        .withArgs(2, []);
+    });
+  });
 });
