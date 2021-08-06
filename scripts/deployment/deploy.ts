@@ -98,7 +98,7 @@ async function verifyContract(
   contractAddress: string,
   constructorArguments: any[]
 ) {
-  // TODO
+  console.log();
 }
 
 main()
