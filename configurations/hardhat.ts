@@ -35,7 +35,7 @@ export default {
   paths: {
     root: "..",
     sources: "contracts",
-    tests: "tests/unit",
+    tests: "tests",
     artifacts: "artifacts",
     cache: "artifacts/cache",
   },

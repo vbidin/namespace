@@ -2,7 +2,7 @@ import hre from "hardhat";
 import {
   DOMAIN_REGISTRY_CONTRACT,
   RECORD_STORAGE_CONTRACT,
-} from "../constants";
+} from "../constants/contracts";
 
 // location where addresses of deployed contracts will be stored
 export const DEPLOYMENT_OUTPUT =

@@ -1,15 +1,10 @@
 import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
-import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
-import {
-  DOMAIN_REGISTRY_CONTRACT,
-  TRANSFER_EVENT,
-  REFRESH_EVENT,
-  APPROVAL_EVENT,
-  APPROVAL_FOR_ALL_EVENT,
-} from "../../scripts/constants";
-import { CONSTRUCTOR_ARGUMENTS } from "../../scripts/deployment/options";
+import { DomainRegistry } from "../artifacts/types/DomainRegistry";
+import { DOMAIN_REGISTRY_CONTRACT } from "../scripts/constants/contracts";
+import { TRANSFER_EVENT, REFRESH_EVENT } from "../scripts/constants/events";
+import { CONSTRUCTOR_ARGUMENTS } from "../scripts/deployment/options";
 
 describe(DOMAIN_REGISTRY_CONTRACT, () => {
   let factory: ContractFactory;
@@ -36,14 +31,14 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
 
     it("should create a public domain when parent domain is the root domain", async () => {
       await expect(registry.create(0, "org"))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(constants.AddressZero, constants.AddressZero, 1);
     });
 
     it("should create a private domain when parent domain is a public domain", async () => {
       await registry.create(0, "org");
       await expect(registry.create(1, "ethereum"))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(constants.AddressZero, await first.getAddress(), 2);
     });
 
@@ -51,7 +46,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(0, "org");
       await registry.create(1, "ethereum");
       await expect(registry.create(2, "memereum"))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(constants.AddressZero, await first.getAddress(), 3);
     });
 
@@ -85,7 +80,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     it("should succeed when domain name is extremely long", async () => {
       const name = "a".repeat(10000);
       await expect(await registry.create(0, name))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(constants.AddressZero, constants.AddressZero, 1);
       await expect(await registry.idOf(name)).to.be.equal(1);
     });
@@ -136,7 +131,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(0, "org");
       await registry.connect(second).create(1, "ethereum");
       await expect(registry.claim(2))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(await second.getAddress(), await first.getAddress(), 2);
     });
   });
@@ -165,7 +160,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(0, "org");
       await registry.create(1, "ethereum");
       await expect(registry.refresh(2))
-        .to.be.emit(registry, "Refresh")
+        .to.be.emit(registry, REFRESH_EVENT)
         .withArgs(2, []);
     });
   });
@@ -224,7 +219,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
 
     it("should succeed if the caller is the domain owner", async () => {
       await expect(registry.transferFrom(sender, recipient, domainId))
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(sender, recipient, domainId);
     });
 
@@ -233,7 +228,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(
         registry.connect(third).transferFrom(sender, recipient, domainId)
       )
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(sender, recipient, domainId);
       expect(await registry.getApproved(domainId)).to.equals(
         constants.AddressZero
@@ -245,7 +240,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(
         registry.connect(third).transferFrom(sender, recipient, domainId)
       )
-        .to.emit(registry, "Transfer")
+        .to.emit(registry, TRANSFER_EVENT)
         .withArgs(sender, recipient, domainId);
       expect(await registry.getApproved(domainId)).to.equals(
         constants.AddressZero

@@ -1,5 +1,5 @@
 import { getContract } from "./utility";
-import { DOMAIN_REGISTRY_CONTRACT } from "../constants";
+import { DOMAIN_REGISTRY_CONTRACT } from "../constants/contracts";
 
 async function main() {
   const options = { gasLimit: 1000000 };
