@@ -30,7 +30,7 @@
     "build": "hardhat compile --config configurations/hardhat.ts",
     "test:unit": "hardhat test --config configurations/hardhat.ts --no-compile",
     "test:gas": "echo check gas usage",
-    "test:integration": "hardhat run --config configurations/hardhat.ts --no-compile tests/integration/run.ts",
+    "test:integration": "hardhat run --config configurations/hardhat.ts --no-compile scripts/integration/run.ts",
     "scan:slither": "slither contracts/DomainRegistry.sol --print human-summary",
     "deploy": "hardhat run --config configurations/hardhat.ts --no-compile scripts/deployment/deploy.ts",
     "clean": "rm -rf artifacts"

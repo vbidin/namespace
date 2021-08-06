@@ -2,7 +2,13 @@ import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../../artifacts/types/DomainRegistry";
-import { DOMAIN_REGISTRY_CONTRACT } from "../../scripts/constants";
+import {
+  DOMAIN_REGISTRY_CONTRACT,
+  TRANSFER_EVENT,
+  REFRESH_EVENT,
+  APPROVAL_EVENT,
+  APPROVAL_FOR_ALL_EVENT,
+} from "../../scripts/constants";
 import { CONSTRUCTOR_ARGUMENTS } from "../../scripts/deployment/options";
 
 describe(DOMAIN_REGISTRY_CONTRACT, () => {

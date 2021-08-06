@@ -3,7 +3,7 @@ import hre from "hardhat";
 import { ethers } from "hardhat";
 import { readFile } from "fs/promises";
 import { providers, Signer, Wallet, Contract } from "ethers";
-import { DEPLOYMENT_OUTPUT } from "../../scripts/deployment/options";
+import { DEPLOYMENT_OUTPUT } from "../deployment/options";
 
 export async function getContract(contractName: string) {
   const contractAddress = await getContractAddress(contractName);
