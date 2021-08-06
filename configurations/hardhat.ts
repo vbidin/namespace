@@ -11,7 +11,7 @@ export default {
   networks: {
     hardhat: {
       accounts: {
-        count: 2,
+        count: 10,
       },
       hardfork: "london",
     },
