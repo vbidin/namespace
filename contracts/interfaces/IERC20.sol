@@ -64,16 +64,16 @@ interface IERC20 {
 
     /// @notice
     /// @dev
-    /// @return totalSupply
-    function totalSupply() external view returns (uint256 totalSupply);
+    /// @return amount
+    function totalSupply() external view returns (uint256 amount);
 
     /// @notice
     /// @dev
     /// @param owner -
     /// @param spender -
-    /// @return allowance -
+    /// @return amount -
     function allowance(address owner, address spender)
         external
         view
-        returns (uint256 allowance);
+        returns (uint256 amount);
 }
