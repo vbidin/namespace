@@ -43,37 +43,32 @@ describe(DOMAIN_REGISTRY, () => {
         .withArgs(constants.AddressZero, await first.getAddress(), 2);
     });
 
-    describe("when parent domain is a private domain", async () => {
-      beforeEach(async () => {
-        await registry.create(0, "org");
-        await registry.create(1, "ethereum");
-      });
-
-      it("should succeed when it's owned by the caller", async () => {
-        await expect(registry.create(2, "memereum"))
-          .to.emit(registry, "Transfer")
-          .withArgs(constants.AddressZero, await first.getAddress(), 3);
-      });
-
-      it("should revert when it's not owned by the caller", async () => {
-        await expect(
-          registry.connect(second).create(2, "memereum")
-        ).to.be.revertedWith("domain is not owned by caller");
-      });
+    it("should succeed when parent domain is a private domain and is owned by the caller", async () => {
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+      await expect(registry.create(2, "memereum"))
+        .to.emit(registry, "Transfer")
+        .withArgs(constants.AddressZero, await first.getAddress(), 3);
     });
 
-    describe("should fail when prefix", async () => {
-      it("is empty", async () => {
-        await expect(registry.create(0, "")).to.be.revertedWith(
-          "prefix is empty"
-        );
-      });
+    it("should revert when it's not owned by the caller", async () => {
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+      await expect(
+        registry.connect(second).create(2, "memereum")
+      ).to.be.revertedWith("domain is not owned by caller");
+    });
 
-      it("contains periods", async () => {
-        await expect(registry.create(0, "ethereum.org")).to.be.revertedWith(
-          "prefix contains periods"
-        );
-      });
+    it("should fail when prefix is empty", async () => {
+      await expect(registry.create(0, "")).to.be.revertedWith(
+        "prefix is empty"
+      );
+    });
+
+    it("should fail when prefix contains periods", async () => {
+      await expect(registry.create(0, "ethereum.org")).to.be.revertedWith(
+        "prefix contains periods"
+      );
     });
 
     it("should fail when created domain already exists", async () => {
