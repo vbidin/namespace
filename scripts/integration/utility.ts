@@ -4,7 +4,7 @@ import { readFile } from "fs/promises";
 import { providers, Signer, Wallet, Contract } from "ethers";
 import { DEPLOYMENT_OUTPUT } from "../deployment/options";
 
-export async function getContract(contractName: string) {
+export async function getContract(contractName: string): Promise<Contract> {
   const contractAddress = await getContractAddress(contractName);
   const contractInterface = await getContractInterface(contractName);
   const signer = getSigner();

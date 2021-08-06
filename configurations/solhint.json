@@ -31,13 +31,11 @@
     "ordering": "error",
     "payable-fallback": "warn",
     "prettier/prettier": "error",
-    "private-vars-leading-underscore": ["error", { "strict": false }],
     "quotes": ["error", "double"],
     "reason-string": ["warn", { "maxLength": 32 }],
     "reentrancy": "error",
     "state-visibility": "error",
     "use-forbidden-name": "error",
-    "var-name-mixedcase": "error",
     "visibility-modifier-order": "error"
   }
 }
