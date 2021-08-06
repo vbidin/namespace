@@ -10,18 +10,20 @@ import {
 describe(DOMAIN_REGISTRY, () => {
   let factory: ContractFactory;
   let registry: DomainRegistry;
-  let main: Signer;
-  let other: Signer;
+
+  let first: Signer;
+  let second: Signer;
+  let third: Signer;
 
   beforeEach(async () => {
-    [main, other] = await ethers.getSigners();
+    [first, second, third] = await ethers.getSigners();
     factory = await ethers.getContractFactory(DOMAIN_REGISTRY);
     registry = (await factory.deploy(
       CONSTRUCTOR_ARGUMENTS.get(DOMAIN_REGISTRY)!
     )) as DomainRegistry;
   });
 
-  describe("when creating a new domain", async () => {
+  describe("create", async () => {
     it("should revert when parent domain does not exist", async () => {
       await expect(registry.create(1337, "org")).to.be.revertedWith(
         "domain does not exist"
@@ -38,7 +40,7 @@ describe(DOMAIN_REGISTRY, () => {
       await registry.create(0, "org");
       await expect(registry.create(1, "ethereum"))
         .to.emit(registry, "Transfer")
-        .withArgs(constants.AddressZero, await main.getAddress(), 2);
+        .withArgs(constants.AddressZero, await first.getAddress(), 2);
     });
 
     describe("when parent domain is a private domain", async () => {
@@ -50,12 +52,12 @@ describe(DOMAIN_REGISTRY, () => {
       it("should succeed when it's owned by the caller", async () => {
         await expect(registry.create(2, "memereum"))
           .to.emit(registry, "Transfer")
-          .withArgs(constants.AddressZero, await main.getAddress(), 3);
+          .withArgs(constants.AddressZero, await first.getAddress(), 3);
       });
 
       it("should revert when it's not owned by the caller", async () => {
         await expect(
-          registry.connect(other).create(2, "memereum")
+          registry.connect(second).create(2, "memereum")
         ).to.be.revertedWith("domain is not owned by caller");
       });
     });
@@ -99,7 +101,7 @@ describe(DOMAIN_REGISTRY, () => {
     });
   });
 
-  describe("when claiming an existing domain", async () => {
+  describe("claim", async () => {
     it("should fail when domain does not exist", async () => {
       await expect(registry.claim(1337)).to.be.revertedWith(
         "domain does not exist"
@@ -121,7 +123,7 @@ describe(DOMAIN_REGISTRY, () => {
 
     it("should fail when domain is not owned by the caller and has not expired", async () => {
       await registry.create(0, "org");
-      await registry.connect(other).create(1, "ethereum");
+      await registry.connect(second).create(1, "ethereum");
       await expect(registry.claim(2)).to.be.revertedWith(
         "domain has not expired"
       );
@@ -133,14 +135,14 @@ describe(DOMAIN_REGISTRY, () => {
       registry = (await factory.deploy(args)) as DomainRegistry;
 
       await registry.create(0, "org");
-      await registry.connect(other).create(1, "ethereum");
+      await registry.connect(second).create(1, "ethereum");
       await expect(registry.claim(2))
         .to.emit(registry, "Transfer")
-        .withArgs(await other.getAddress(), await main.getAddress(), 2);
+        .withArgs(await second.getAddress(), await first.getAddress(), 2);
     });
   });
 
-  describe("when refreshing an existing domain", async () => {
+  describe("refresh", async () => {
     it("should fail when domain does not exist", async () => {
       await expect(registry.refresh(1337)).to.be.revertedWith(
         "domain does not exist"
@@ -154,7 +156,7 @@ describe(DOMAIN_REGISTRY, () => {
 
     it("should fail when domain is not owned by the caller", async () => {
       await registry.create(0, "org");
-      await registry.connect(other).create(1, "ethereum");
+      await registry.connect(second).create(1, "ethereum");
       await expect(registry.refresh(2)).to.be.revertedWith(
         "domain is not owned by caller"
       );
@@ -166,6 +168,95 @@ describe(DOMAIN_REGISTRY, () => {
       await expect(registry.refresh(2))
         .to.be.emit(registry, "Refresh")
         .withArgs(2, []);
+    });
+  });
+
+  describe("transferFrom", () => {
+    let sender: string;
+    let recipient: string;
+    let thirdParty: string;
+    let domainId: number;
+
+    beforeEach(async () => {
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+
+      sender = await first.getAddress();
+      recipient = await second.getAddress();
+      thirdParty = await third.getAddress();
+      domainId = 2;
+    });
+
+    it("should fail when sender address is the zero address", async () => {
+      await expect(
+        registry.transferFrom(constants.AddressZero, recipient, domainId)
+      ).to.be.revertedWith("address is zero");
+    });
+
+    it("should fail when recipient address is the zero address", async () => {
+      await expect(
+        registry.transferFrom(sender, constants.AddressZero, domainId)
+      ).to.be.revertedWith("address is zero");
+    });
+
+    it("should fail when sender and recipient address are equal", async () => {
+      await expect(
+        registry.transferFrom(sender, sender, domainId)
+      ).to.be.revertedWith("addresses are equal");
+    });
+
+    it("should fail when domain does not exist", async () => {
+      await expect(
+        registry.transferFrom(sender, recipient, 1337)
+      ).to.be.revertedWith("domain does not exist");
+    });
+
+    it("should fail when the domain is public", async () => {
+      await expect(
+        registry.transferFrom(sender, recipient, 1)
+      ).to.be.revertedWith("domain is public");
+    });
+
+    it("should fail when domain is not owned by the sender", async () => {
+      await expect(
+        registry.transferFrom(recipient, sender, domainId)
+      ).to.be.revertedWith("domain is not owned by sender");
+    });
+
+    it("should succeed if the caller is the domain owner", async () => {
+      await expect(registry.transferFrom(sender, recipient, domainId))
+        .to.emit(registry, "Transfer")
+        .withArgs(sender, recipient, domainId);
+    });
+
+    it("should succeed if the caller is the approved address", async () => {
+      await registry.approve(thirdParty, domainId);
+      await expect(
+        registry.connect(third).transferFrom(sender, recipient, domainId)
+      )
+        .to.emit(registry, "Transfer")
+        .withArgs(sender, recipient, domainId);
+      expect(await registry.getApproved(domainId)).to.equals(
+        constants.AddressZero
+      );
+    });
+
+    it("should succeed if the caller is an authorized operator", async () => {
+      await registry.setApprovalForAll(thirdParty, true);
+      await expect(
+        registry.connect(third).transferFrom(sender, recipient, domainId)
+      )
+        .to.emit(registry, "Transfer")
+        .withArgs(sender, recipient, domainId);
+      expect(await registry.getApproved(domainId)).to.equals(
+        constants.AddressZero
+      );
+    });
+
+    it("should fail when the caller is not the owner of the domain, an approved address, or an operator", async () => {
+      await expect(
+        registry.connect(third).transferFrom(sender, recipient, domainId)
+      ).to.be.revertedWith("caller can not transfer domain");
     });
   });
 });
