@@ -4,8 +4,7 @@
   "description": "Smart contracts for the Namespace protocol",
   "author": {
     "name": "Vedran Bidin",
-    "email": "vedran@bidin.me",
-    "url": "http://bidin.me"
+    "email": "vedran@bidin.me"
   },
   "repository": {
     "type": "git",

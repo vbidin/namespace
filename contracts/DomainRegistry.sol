@@ -343,8 +343,8 @@ contract DomainRegistry is IDomainRegistry {
         addressIsNotZero(recipient)
         addressesAreNotEqual(sender, recipient)
         domainIdExists(domainId)
-        domainIsOwnedBySender(domainId, sender)
         domainIsNotPublic(domainId)
+        domainIsOwnedBySender(domainId, sender)
         domainCanBeTransferredByCaller(domainId)
     {
         _transferDomain(sender, recipient, domainId);
