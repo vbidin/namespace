@@ -63,12 +63,10 @@ async function deployContract(
   let factory = await ethers.getContractFactory(contractName);
   factory = factory.connect(signer);
   const contract = await factory.deploy(constructorArguments);
-  console.log(
-    `deploying ${contractName} with arguments: ${JSON.stringify(
-      constructorArguments
-    )}`
-  );
+  console.log(`--- ${contractName} ---`);
+  console.log(`constructor arguments: ${JSON.stringify(constructorArguments)}`);
   console.log(`transaction hash: ${contract.deployTransaction.hash}`);
+  console.log("waiting...");
   await contract.deployed();
   console.log(`deployed on address: ${contract.address}`);
   return contract;
@@ -98,7 +96,7 @@ async function verifyContract(
   contractAddress: string,
   constructorArguments: any[]
 ) {
-  console.log();
+  console.log("skipping contract verification");
 }
 
 main()
