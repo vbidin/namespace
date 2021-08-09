@@ -270,4 +270,11 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       ).to.be.revertedWith(DOMAIN_CAN_NOT_BE_TRANSFERRED_BY_CALLER_ERROR);
     });
   });
+
+  describe("safeTransferFrom", () => {
+    it("should succeed if receiver is not a contract", async () => {});
+    it("should succeed if receiver is a contract and returns the expected value", async () => {});
+    it("should fail if receiver is a contract and returns an invalid value", async () => {});
+    it("should fail to transfer domain if receiver uses too much gas", async () => {});
+  });
 });
