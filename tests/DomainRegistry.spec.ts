@@ -276,12 +276,14 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     });
   });
 
+  /*
   describe("safeTransferFrom", () => {
     it("should succeed if receiver is not a contract", async () => {});
     it("should succeed if receiver is a contract and returns the expected value", async () => {});
     it("should fail if receiver is a contract and returns an invalid value", async () => {});
     it("should fail to transfer domain if receiver uses too much gas", async () => {});
   });
+  */
 
   describe("approve", () => {
     let owner: string;
@@ -313,9 +315,9 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     });
 
     it("should fail if caller does not own domain and is not authorized operator", async () => {
-      await expect(registry.connect(second).approve(approved, domainId)).to.be.revertedWith(
-        DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR
-      );
+      await expect(
+        registry.connect(second).approve(approved, domainId)
+      ).to.be.revertedWith(DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR);
     });
 
     it("should succeed if caller owns domain", async () => {
@@ -332,8 +334,8 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
 
     it("should succeed if approved is zero address", async () => {
       await expect(registry.approve(constants.AddressZero, 2))
-      .to.emit(registry, APPROVAL_EVENT)
-      .withArgs(owner, constants.AddressZero, domainId);
+        .to.emit(registry, APPROVAL_EVENT)
+        .withArgs(owner, constants.AddressZero, domainId);
     });
   });
 });
