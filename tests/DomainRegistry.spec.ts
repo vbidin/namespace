@@ -3,12 +3,17 @@ import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../artifacts/types/DomainRegistry";
 import { DOMAIN_REGISTRY_CONTRACT } from "../scripts/constants/contracts";
-import { TRANSFER_EVENT, REFRESH_EVENT } from "../scripts/constants/events";
+import {
+  TRANSFER_EVENT,
+  REFRESH_EVENT,
+  APPROVAL_EVENT,
+} from "../scripts/constants/events";
 import { CONSTRUCTOR_ARGUMENTS } from "../scripts/deployment/options";
 import {
   ADDRESSES_ARE_IDENTICAL_ERROR,
   ADDRESS_IS_ZERO_ERROR,
   DOMAIN_ALREADY_EXISTS_ERROR,
+  DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR,
   DOMAIN_CAN_NOT_BE_TRANSFERRED_BY_CALLER_ERROR,
   DOMAIN_DOES_NOT_EXIST_ERROR,
   DOMAIN_HAS_NOT_EXPIRED_ERROR,
@@ -276,5 +281,59 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     it("should succeed if receiver is a contract and returns the expected value", async () => {});
     it("should fail if receiver is a contract and returns an invalid value", async () => {});
     it("should fail to transfer domain if receiver uses too much gas", async () => {});
+  });
+
+  describe("approve", () => {
+    let owner: string;
+    let approved: string;
+    let operator: string;
+    let domainId: number;
+
+    beforeEach(async () => {
+      owner = await first.getAddress();
+      approved = await second.getAddress();
+      operator = await third.getAddress();
+      domainId = 2;
+
+      await registry.create(0, "org");
+      await registry.create(1, "ethereum");
+      await registry.setApprovalForAll(operator, true);
+    });
+
+    it("should fail if domain does not exist", async () => {
+      await expect(registry.approve(approved, 1337)).to.be.revertedWith(
+        DOMAIN_DOES_NOT_EXIST_ERROR
+      );
+    });
+
+    it("should fail if domain is public", async () => {
+      await expect(registry.approve(approved, 0)).to.be.revertedWith(
+        DOMAIN_IS_PUBLIC_ERROR
+      );
+    });
+
+    it("should fail if caller does not own domain and is not authorized operator", async () => {
+      await expect(registry.connect(second).approve(approved, domainId)).to.be.revertedWith(
+        DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR
+      );
+    });
+
+    it("should succeed if caller owns domain", async () => {
+      await expect(registry.approve(approved, domainId))
+        .to.emit(registry, APPROVAL_EVENT)
+        .withArgs(owner, approved, domainId);
+    });
+
+    it("should succeed if caller is authorized operator", async () => {
+      await expect(registry.connect(third).approve(approved, 2))
+        .to.emit(registry, APPROVAL_EVENT)
+        .withArgs(owner, approved, domainId);
+    });
+
+    it("should succeed if approved is zero address", async () => {
+      await expect(registry.approve(constants.AddressZero, 2))
+      .to.emit(registry, APPROVAL_EVENT)
+      .withArgs(owner, constants.AddressZero, domainId);
+    });
   });
 });
