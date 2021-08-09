@@ -42,7 +42,7 @@ jobs:
       - run: sudo add-apt-repository ppa:ethereum/ethereum
       - run: sudo apt update && sudo apt install solc
       - run: pip3 install -r configurations/requirements.txt
-      - run: slither contracts/DomainRegistry.sol --print human-summary
+      #- run: slither contracts/DomainRegistry.sol --print human-summary
 
   integrate:
     runs-on: ubuntu-latest
