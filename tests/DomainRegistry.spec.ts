@@ -2,31 +2,12 @@ import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../artifacts/types/DomainRegistry";
-import { DOMAIN_REGISTRY_CONTRACT } from "../scripts/constants/contracts";
-import {
-  TRANSFER_EVENT,
-  REFRESH_EVENT,
-  APPROVAL_EVENT,
-  APPROVAL_FOR_ALL_EVENT,
-} from "../scripts/constants/events";
-import { CONSTRUCTOR_ARGUMENTS } from "../scripts/deployment/options";
-import {
-  ADDRESSES_ARE_IDENTICAL_ERROR,
-  ADDRESS_IS_ZERO_ERROR,
-  DOMAIN_ALREADY_EXISTS_ERROR,
-  DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR,
-  DOMAIN_CAN_NOT_BE_TRANSFERRED_BY_CALLER_ERROR,
-  DOMAIN_DOES_NOT_EXIST_ERROR,
-  DOMAIN_HAS_NOT_EXPIRED_ERROR,
-  DOMAIN_IS_OWNED_BY_CALLER_ERROR,
-  DOMAIN_IS_NOT_OWNED_BY_CALLER_ERROR,
-  DOMAIN_IS_NOT_OWNED_BY_SENDER_ERROR,
-  DOMAIN_IS_PUBLIC_ERROR,
-  STRING_CONTAINS_PERIODS_ERROR,
-  STRING_IS_EMPTY_ERROR,
-} from "../scripts/constants/errors";
+import { Contracts } from "../scripts/enums/contracts";
+import { Events } from "../scripts/enums/events";
+import { Errors } from "../scripts/enums/errors";
+import { ConstructorArguments } from "../scripts/deployment/options";
 
-describe(DOMAIN_REGISTRY_CONTRACT, () => {
+describe(Contracts.DomainRegistry, () => {
   let caller: Signer; // default signer
   let owner: Signer;
   let recipient: Signer;
@@ -35,6 +16,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
   let other: Signer;
 
   let factory: ContractFactory;
+  let args: any;
   let registry: DomainRegistry;
 
   const prefix = "org";
@@ -56,22 +38,21 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
   beforeEach(async () => {
     [caller, owner, recipient, approved, operator, other] =
       await ethers.getSigners();
-    factory = await ethers.getContractFactory(DOMAIN_REGISTRY_CONTRACT);
-    registry = (await factory.deploy(
-      CONSTRUCTOR_ARGUMENTS.get(DOMAIN_REGISTRY_CONTRACT)!
-    )) as DomainRegistry;
+    factory = await ethers.getContractFactory(Contracts.DomainRegistry);
+    args = { ...ConstructorArguments.get(Contracts.DomainRegistry) };
+    registry = (await factory.deploy(args)) as DomainRegistry;
   });
 
   describe("create", async () => {
     it("should revert when parent domain does not exist", async () => {
       await expect(
         registry.create(missingDomain.id, prefix)
-      ).to.be.revertedWith(DOMAIN_DOES_NOT_EXIST_ERROR);
+      ).to.be.revertedWith(Errors.DomainDoesNotExist);
     });
 
     it("should create a public domain when parent domain is the root domain", async () => {
       await expect(registry.create(rootDomain.id, publicDomain.prefix))
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           constants.AddressZero,
           constants.AddressZero,
@@ -82,7 +63,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     it("should create a private domain when parent domain is a public domain", async () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       await expect(registry.create(publicDomain.id, privateDomain.prefix))
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           constants.AddressZero,
           await caller.getAddress(),
@@ -96,7 +77,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(
         registry.create(privateDomain.id, anotherPrivateDomain.prefix)
       )
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           constants.AddressZero,
           await caller.getAddress(),
@@ -111,31 +92,31 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         .create(publicDomain.id, privateDomain.prefix);
       await expect(
         registry.create(privateDomain.id, anotherPrivateDomain.prefix)
-      ).to.be.revertedWith(DOMAIN_IS_NOT_OWNED_BY_CALLER_ERROR);
+      ).to.be.revertedWith(Errors.DomainIsNotOwnedByCaller);
     });
 
     it("should fail when prefix is empty", async () => {
       await expect(registry.create(rootDomain.id, "")).to.be.revertedWith(
-        STRING_IS_EMPTY_ERROR
+        Errors.StringIsEmpty
       );
     });
 
     it("should fail when prefix contains periods", async () => {
       await expect(
         registry.create(rootDomain.id, prefixWithPeriods)
-      ).to.be.revertedWith(STRING_CONTAINS_PERIODS_ERROR);
+      ).to.be.revertedWith(Errors.StringContainsPeriods);
     });
 
     it("should fail when created domain already exists", async () => {
       await registry.create(rootDomain.id, prefix);
       await expect(registry.create(rootDomain.id, prefix)).to.be.revertedWith(
-        DOMAIN_ALREADY_EXISTS_ERROR
+        Errors.DomainAlreadyExists
       );
     });
 
     it("should succeed when domain name is extremely long", async () => {
       await expect(await registry.create(rootDomain.id, extremelyLongPrefix))
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           constants.AddressZero,
           constants.AddressZero,
@@ -147,7 +128,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       for (let i = publicDomain.id; i < numberOfLevels; i++) {
         expect(await registry.create(i, longPrefix))
-          .to.emit(registry, TRANSFER_EVENT)
+          .to.emit(registry, Events.Transfer)
           .withArgs(constants.AddressZero, await caller.getAddress(), i + 1);
       }
     });
@@ -156,14 +137,14 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
   describe("claim", async () => {
     it("should fail when domain does not exist", async () => {
       await expect(registry.claim(missingDomain.id)).to.be.revertedWith(
-        DOMAIN_DOES_NOT_EXIST_ERROR
+        Errors.DomainDoesNotExist
       );
     });
 
     it("should fail when domain is public", async () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       await expect(registry.claim(publicDomain.id)).to.be.revertedWith(
-        DOMAIN_IS_PUBLIC_ERROR
+        Errors.DomainIsPublic
       );
     });
 
@@ -171,7 +152,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       await registry.create(publicDomain.id, privateDomain.prefix);
       await expect(registry.claim(privateDomain.id)).to.be.revertedWith(
-        DOMAIN_IS_OWNED_BY_CALLER_ERROR
+        Errors.DomainIsAlreadyOwnedByCaller
       );
     });
 
@@ -181,21 +162,19 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         .connect(owner)
         .create(publicDomain.id, privateDomain.prefix);
       await expect(registry.claim(privateDomain.id)).to.be.revertedWith(
-        DOMAIN_HAS_NOT_EXPIRED_ERROR
+        Errors.DomainHasNotExpired
       );
     });
 
     it("should succeed when domain is not owned by the caller and has expired", async () => {
-      const args = { ...CONSTRUCTOR_ARGUMENTS.get(DOMAIN_REGISTRY_CONTRACT) };
       args.domainDuration = 0;
       registry = (await factory.deploy(args)) as DomainRegistry;
-
       await registry.create(rootDomain.id, publicDomain.prefix);
       await registry
         .connect(owner)
         .create(publicDomain.id, privateDomain.prefix);
       await expect(registry.claim(privateDomain.id))
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           await owner.getAddress(),
           await caller.getAddress(),
@@ -207,14 +186,14 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
   describe("refresh", async () => {
     it("should fail when domain does not exist", async () => {
       await expect(registry.refresh(missingDomain.id)).to.be.revertedWith(
-        DOMAIN_DOES_NOT_EXIST_ERROR
+        Errors.DomainDoesNotExist
       );
     });
 
     it("should fail when domain is public", async () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       await expect(registry.refresh(publicDomain.id)).to.be.revertedWith(
-        DOMAIN_IS_PUBLIC_ERROR
+        Errors.DomainIsPublic
       );
     });
 
@@ -224,7 +203,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         .connect(owner)
         .create(publicDomain.id, privateDomain.prefix);
       await expect(registry.refresh(privateDomain.id)).to.be.revertedWith(
-        DOMAIN_IS_NOT_OWNED_BY_CALLER_ERROR
+        Errors.DomainIsNotOwnedByCaller
       );
     });
 
@@ -232,7 +211,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(rootDomain.id, publicDomain.prefix);
       await registry.create(publicDomain.id, privateDomain.prefix);
       await expect(registry.refresh(privateDomain.id))
-        .to.be.emit(registry, REFRESH_EVENT)
+        .to.be.emit(registry, Events.Refresh)
         .withArgs(privateDomain.id, []);
     });
   });
@@ -258,7 +237,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           await recipient.getAddress(),
           privateDomain.id
         )
-      ).to.be.revertedWith(ADDRESS_IS_ZERO_ERROR);
+      ).to.be.revertedWith(Errors.AddressIsZero);
     });
 
     it("should fail when recipient address is the zero address", async () => {
@@ -268,7 +247,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           constants.AddressZero,
           privateDomain.id
         )
-      ).to.be.revertedWith(ADDRESS_IS_ZERO_ERROR);
+      ).to.be.revertedWith(Errors.AddressIsZero);
     });
 
     it("should fail when sender and recipient address are equal", async () => {
@@ -278,7 +257,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           await owner.getAddress(),
           privateDomain.id
         )
-      ).to.be.revertedWith(ADDRESSES_ARE_IDENTICAL_ERROR);
+      ).to.be.revertedWith(Errors.AddressesAreIdentical);
     });
 
     it("should fail when domain does not exist", async () => {
@@ -288,7 +267,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           await recipient.getAddress(),
           missingDomain.id
         )
-      ).to.be.revertedWith(DOMAIN_DOES_NOT_EXIST_ERROR);
+      ).to.be.revertedWith(Errors.DomainDoesNotExist);
     });
 
     it("should fail when the domain is public", async () => {
@@ -298,7 +277,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           await recipient.getAddress(),
           publicDomain.id
         )
-      ).to.be.revertedWith(DOMAIN_IS_PUBLIC_ERROR);
+      ).to.be.revertedWith(Errors.DomainIsPublic);
     });
 
     it("should fail when domain is not owned by the sender", async () => {
@@ -308,7 +287,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           await recipient.getAddress(),
           privateDomain.id
         )
-      ).to.be.revertedWith(DOMAIN_IS_NOT_OWNED_BY_SENDER_ERROR);
+      ).to.be.revertedWith(Errors.DomainIsNotOwnedBySender);
     });
 
     it("should succeed if the caller is the domain owner", async () => {
@@ -321,7 +300,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
             privateDomain.id
           )
       )
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           await owner.getAddress(),
           await recipient.getAddress(),
@@ -339,7 +318,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
             privateDomain.id
           )
       )
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           await owner.getAddress(),
           await recipient.getAddress(),
@@ -360,7 +339,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
             privateDomain.id
           )
       )
-        .to.emit(registry, TRANSFER_EVENT)
+        .to.emit(registry, Events.Transfer)
         .withArgs(
           await owner.getAddress(),
           await recipient.getAddress(),
@@ -380,7 +359,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
             await recipient.getAddress(),
             privateDomain.id
           )
-      ).to.be.revertedWith(DOMAIN_CAN_NOT_BE_TRANSFERRED_BY_CALLER_ERROR);
+      ).to.be.revertedWith(Errors.DomainCanNotBeTransferredByCaller);
     });
   });
 
@@ -407,13 +386,13 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     it("should fail if domain does not exist", async () => {
       await expect(
         registry.approve(await approved.getAddress(), missingDomain.id)
-      ).to.be.revertedWith(DOMAIN_DOES_NOT_EXIST_ERROR);
+      ).to.be.revertedWith(Errors.DomainDoesNotExist);
     });
 
     it("should fail if domain is public", async () => {
       await expect(
         registry.approve(await approved.getAddress(), publicDomain.id)
-      ).to.be.revertedWith(DOMAIN_IS_PUBLIC_ERROR);
+      ).to.be.revertedWith(Errors.DomainIsPublic);
     });
 
     it("should fail if caller does not own domain and is not authorized operator", async () => {
@@ -421,7 +400,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         registry
           .connect(other)
           .approve(await approved.getAddress(), privateDomain.id)
-      ).to.be.revertedWith(DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR);
+      ).to.be.revertedWith(Errors.DomainCanNotBeApprovedByCaller);
     });
 
     it("should fail if domain owner approves himself", async () => {
@@ -429,7 +408,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         registry
           .connect(owner)
           .approve(await owner.getAddress(), privateDomain.id)
-      ).to.be.revertedWith(ADDRESSES_ARE_IDENTICAL_ERROR);
+      ).to.be.revertedWith(Errors.AddressesAreIdentical);
     });
 
     it("should fail if authorized operator approves himself", async () => {
@@ -437,7 +416,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         registry
           .connect(operator)
           .approve(await operator.getAddress(), privateDomain.id)
-      ).to.be.revertedWith(ADDRESSES_ARE_IDENTICAL_ERROR);
+      ).to.be.revertedWith(Errors.AddressesAreIdentical);
     });
 
     it("should succeed if caller owns domain", async () => {
@@ -446,7 +425,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           .connect(owner)
           .approve(await approved.getAddress(), privateDomain.id)
       )
-        .to.emit(registry, APPROVAL_EVENT)
+        .to.emit(registry, Events.Approval)
         .withArgs(
           await owner.getAddress(),
           await approved.getAddress(),
@@ -460,7 +439,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
           .connect(operator)
           .approve(await approved.getAddress(), privateDomain.id)
       )
-        .to.emit(registry, APPROVAL_EVENT)
+        .to.emit(registry, Events.Approval)
         .withArgs(
           await owner.getAddress(),
           await approved.getAddress(),
@@ -472,7 +451,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(
         registry.connect(owner).approve(constants.AddressZero, privateDomain.id)
       )
-        .to.emit(registry, APPROVAL_EVENT)
+        .to.emit(registry, Events.Approval)
         .withArgs(
           await owner.getAddress(),
           constants.AddressZero,
@@ -485,13 +464,13 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
     it("should fail if operator is zero address", async () => {
       await expect(
         registry.setApprovalForAll(constants.AddressZero, true)
-      ).to.be.revertedWith(ADDRESS_IS_ZERO_ERROR);
+      ).to.be.revertedWith(Errors.AddressIsZero);
     });
 
     it("should fail if operator is caller", async () => {
       await expect(
         registry.setApprovalForAll(await caller.getAddress(), true)
-      ).to.be.revertedWith(ADDRESSES_ARE_IDENTICAL_ERROR);
+      ).to.be.revertedWith(Errors.AddressesAreIdentical);
     });
 
     it("should succeed otherwise", async () => {
@@ -500,7 +479,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
         await expect(
           registry.setApprovalForAll(await operator.getAddress(), value)
         )
-          .to.emit(registry, APPROVAL_FOR_ALL_EVENT)
+          .to.emit(registry, Events.ApprovalForAll)
           .withArgs(
             await caller.getAddress(),
             await operator.getAddress(),

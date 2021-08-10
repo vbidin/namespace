@@ -2,7 +2,7 @@ import hre from "hardhat";
 import { ethers } from "hardhat";
 import { readFile } from "fs/promises";
 import { providers, Signer, Wallet, Contract } from "ethers";
-import { DEPLOYMENT_OUTPUT } from "../deployment/options";
+import { DeploymentOutputFile } from "../deployment/options";
 
 export async function getContract(contractName: string): Promise<Contract> {
   const contractAddress = await getContractAddress(contractName);
@@ -12,7 +12,7 @@ export async function getContract(contractName: string): Promise<Contract> {
 }
 
 async function getContractAddress(contractName: string) {
-  const json = await readFile(DEPLOYMENT_OUTPUT, "utf-8");
+  const json = await readFile(DeploymentOutputFile, "utf-8");
   const map = new Map<string, string>(Object.entries(JSON.parse(json)));
   return map.get(contractName)!;
 }

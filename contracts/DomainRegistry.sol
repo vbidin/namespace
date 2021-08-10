@@ -68,7 +68,7 @@ contract DomainRegistry is IDomainRegistry {
 
         if (!domain.isCreated()) revert DomainDoesNotExist();
         if (domain.isPublic()) revert DomainIsPublic();
-        if (domain.isOwnedBy(msg.sender)) revert DomainIsOwnedByCaller();
+        if (domain.isOwnedBy(msg.sender)) revert DomainIsAlreadyOwnedByCaller();
         if (!domain.hasExpired(DOMAIN_DURATION)) revert DomainHasNotExpired();
 
         _transferDomain(domain.owner, msg.sender, domainId);

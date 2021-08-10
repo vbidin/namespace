@@ -1,16 +1,14 @@
 import hre from "hardhat";
-import {
-  DOMAIN_REGISTRY_CONTRACT,
-  RECORD_STORAGE_CONTRACT,
-} from "../constants/contracts";
+import { Contracts } from "../enums/contracts";
 
-// location where addresses of deployed contracts will be stored
-export const DEPLOYMENT_OUTPUT =
+// location where addresses of all deployed contracts will be stored
+export const DeploymentOutputFile =
   hre.config.paths.artifacts + "/deployment.json";
 
-// contract names and their constructor arguments, deployed by insertion order
-// references to other contracts will be replaced with addresses during deployment
-export const CONSTRUCTOR_ARGUMENTS: Map<string, any> = new Map([
-  [DOMAIN_REGISTRY_CONTRACT, { domainDuration: 31536000 }],
-  [RECORD_STORAGE_CONTRACT, { domainRegistry: DOMAIN_REGISTRY_CONTRACT }],
+// contract names and their constructor arguments
+// contracts will be deployed in insertion order
+// references to other contracts will be replaced with deployment addresses
+export const ConstructorArguments: Map<string, any> = new Map([
+  [Contracts.DomainRegistry, { domainDuration: 31536000 }],
+  [Contracts.RecordStorage, { domainRegistry: Contracts.DomainRegistry }],
 ]);

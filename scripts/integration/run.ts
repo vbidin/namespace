@@ -1,9 +1,9 @@
 import { getContract } from "./utility";
-import { DOMAIN_REGISTRY_CONTRACT } from "../constants/contracts";
+import { Contracts } from "../enums/contracts";
 
 async function main() {
   const options = { gasLimit: 1000000 };
-  const domainRegistry = await getContract(DOMAIN_REGISTRY_CONTRACT);
+  const domainRegistry = await getContract(Contracts.DomainRegistry);
 
   await (await domainRegistry.create(0, "org", options)).wait();
   await (await domainRegistry.create(1, "ethereum", options)).wait();

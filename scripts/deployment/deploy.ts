@@ -2,18 +2,18 @@ import hre from "hardhat";
 import { writeFile } from "fs/promises";
 import { ethers } from "hardhat";
 import { Signer, Wallet, providers, Contract } from "ethers";
-import { CONSTRUCTOR_ARGUMENTS, DEPLOYMENT_OUTPUT } from "./options";
+import { DeploymentOutputFile, ConstructorArguments } from "./options";
 
 async function main() {
   validate();
   const provider = getProvider((<any>hre.network.config).url);
   const signer = getSigner((<any>hre.config).privateKey, provider);
   const contractAddresses = await deployAndVerifyContracts(
-    CONSTRUCTOR_ARGUMENTS,
+    ConstructorArguments,
     signer
   );
   await writeFile(
-    DEPLOYMENT_OUTPUT,
+    DeploymentOutputFile,
     JSON.stringify(Object.fromEntries(contractAddresses.entries()))
   );
 }
