@@ -44,7 +44,7 @@ contract DomainRegistry is IDomainRegistry {
         returns (uint256 childDomainId)
     {
         Domain storage domain = domains[parentDomainId];
-        DomainOwner storage owner = _getDomainOwner(msg.sender);
+        DomainOwner storage owner = _getOrCreateDomainOwner(msg.sender);
 
         if (!domain.isCreated()) revert DomainDoesNotExist();
         if (!owner.canCreateSubdomain(domain))
@@ -220,7 +220,7 @@ contract DomainRegistry is IDomainRegistry {
             interfaceId == type(IERC165).interfaceId;
     }
 
-    function _getDomainOwner(address id)
+    function _getOrCreateDomainOwner(address id)
         internal
         returns (DomainOwner storage owner)
     {
@@ -275,7 +275,7 @@ contract DomainRegistry is IDomainRegistry {
         if (sender != recipient)
             domains[domainId].transfer(
                 owners[sender],
-                _getDomainOwner(recipient)
+                _getOrCreateDomainOwner(recipient)
             );
         emit Transfer(sender, recipient, domainId);
     }
@@ -311,7 +311,7 @@ contract DomainRegistry is IDomainRegistry {
     }
 
     function _updateOperator(address operator, bool enabled) internal {
-        DomainOwner storage owner = _getDomainOwner(msg.sender);
+        DomainOwner storage owner = _getOrCreateDomainOwner(msg.sender);
         owner.operators[operator] = enabled;
         emit ApprovalForAll(msg.sender, operator, enabled);
     }
