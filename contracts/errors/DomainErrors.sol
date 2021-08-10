@@ -9,7 +9,7 @@ error DomainIsPublic();
 
 error DomainHasNotExpired();
 
-error DomainIsAlreadyOwnedByCaller();
+error DomainIsOwnedByCaller();
 
 error DomainIsNotOwnedByCaller();
 

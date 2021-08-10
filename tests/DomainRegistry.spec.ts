@@ -17,7 +17,7 @@ import {
   DOMAIN_CAN_NOT_BE_TRANSFERRED_BY_CALLER_ERROR,
   DOMAIN_DOES_NOT_EXIST_ERROR,
   DOMAIN_HAS_NOT_EXPIRED_ERROR,
-  DOMAIN_IS_ALREADY_OWNED_BY_CALLER_ERROR,
+  DOMAIN_IS_OWNED_BY_CALLER_ERROR,
   DOMAIN_IS_NOT_OWNED_BY_CALLER_ERROR,
   DOMAIN_IS_NOT_OWNED_BY_SENDER_ERROR,
   DOMAIN_IS_PUBLIC_ERROR,
@@ -131,7 +131,7 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await registry.create(0, "org");
       await registry.create(1, "ethereum");
       await expect(registry.claim(2)).to.be.revertedWith(
-        DOMAIN_IS_ALREADY_OWNED_BY_CALLER_ERROR
+        DOMAIN_IS_OWNED_BY_CALLER_ERROR
       );
     });
 
@@ -318,6 +318,18 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(
         registry.connect(second).approve(approved, domainId)
       ).to.be.revertedWith(DOMAIN_CAN_NOT_BE_APPROVED_BY_CALLER_ERROR);
+    });
+
+    it("should fail if domain owner approves himself", async () => {
+      await expect(registry.approve(owner, domainId)).to.be.revertedWith(
+        ADDRESSES_ARE_IDENTICAL_ERROR
+      );
+    });
+
+    it("should fail if authorized operator approves himself", async () => {
+      await expect(
+        registry.connect(third).approve(operator, domainId)
+      ).to.be.revertedWith(ADDRESSES_ARE_IDENTICAL_ERROR);
     });
 
     it("should succeed if caller owns domain", async () => {

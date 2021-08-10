@@ -68,7 +68,7 @@ contract DomainRegistry is IDomainRegistry {
 
         if (!domain.isCreated()) revert DomainDoesNotExist();
         if (domain.isPublic()) revert DomainIsPublic();
-        if (domain.isOwnedBy(msg.sender)) revert DomainIsAlreadyOwnedByCaller();
+        if (domain.isOwnedBy(msg.sender)) revert DomainIsOwnedByCaller();
         if (!domain.hasExpired(DOMAIN_DURATION)) revert DomainHasNotExpired();
 
         _transferDomain(domain.owner, msg.sender, domainId);
@@ -125,6 +125,7 @@ contract DomainRegistry is IDomainRegistry {
         if (domain.isPublic()) revert DomainIsPublic();
         if (!msg.sender.canApprove(domain, owner))
             revert DomainCanNotBeApprovedByCaller();
+        if (msg.sender == approved) revert AddressesAreIdentical();
 
         _approveDomain(approved, domainId);
     }
