@@ -7,6 +7,7 @@ import {
   TRANSFER_EVENT,
   REFRESH_EVENT,
   APPROVAL_EVENT,
+  APPROVAL_FOR_ALL_EVENT,
 } from "../scripts/constants/events";
 import { CONSTRUCTOR_ARGUMENTS } from "../scripts/deployment/options";
 import {
@@ -348,6 +349,37 @@ describe(DOMAIN_REGISTRY_CONTRACT, () => {
       await expect(registry.approve(constants.AddressZero, 2))
         .to.emit(registry, APPROVAL_EVENT)
         .withArgs(owner, constants.AddressZero, domainId);
+    });
+  });
+
+  describe("setApprovalForAll", () => {
+    let caller: string;
+    let operator: string;
+
+    beforeEach(async () => {
+      caller = await first.getAddress();
+      operator = await third.getAddress();
+    });
+
+    it("should fail if operator is zero address", async () => {
+      await expect(
+        registry.setApprovalForAll(constants.AddressZero, true)
+      ).to.be.revertedWith(ADDRESS_IS_ZERO_ERROR);
+    });
+
+    it("should fail if operator is caller", async () => {
+      await expect(registry.setApprovalForAll(caller, true)).to.be.revertedWith(
+        ADDRESSES_ARE_IDENTICAL_ERROR
+      );
+    });
+
+    it("should succeed otherwise", async () => {
+      const values = [true, false];
+      for (const value of values) {
+        await expect(registry.setApprovalForAll(operator, value))
+          .to.emit(registry, APPROVAL_FOR_ALL_EVENT)
+          .withArgs(caller, operator, value);
+      }
     });
   });
 });
