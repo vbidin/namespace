@@ -32,8 +32,13 @@ contract DomainRegistry is IDomainRegistry {
 
     constructor(DomainRegistryOptions memory options) {
         DOMAIN_DURATION = options.domainDuration;
-        domains[0].exists = true;
-        owners[address(0)].exists = true;
+
+        Domain storage domain = domains[0];
+        DomainOwner storage owner = owners[address(0)];
+
+        domain.exists = true;
+        owner.exists = true;
+        owner.numberOfDomains = 1;
         nextDomainId = 1;
     }
 
