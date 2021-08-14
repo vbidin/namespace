@@ -605,4 +605,36 @@ describe(Contracts.DomainRegistry, () => {
       );
     });
   });
+
+  describe("balanceOf", async () => {
+    beforeEach(async () => {
+      await registry.create(rootDomain.id, publicDomain.prefix);
+      await registry.create(publicDomain.id, privateDomain.prefix);
+    });
+
+    it("should return the number of public domains", async () => {
+      expect(await registry.balanceOf(constants.AddressZero)).to.equal(2);
+    });
+
+    it("should return the number of private domains owned by the address", async () => {
+      expect(await registry.balanceOf(await caller.getAddress())).to.equal(1);
+    });
+
+    it("should return the correct balance after domain is created", async () => {
+      await registry.create(privateDomain.id, anotherPrivateDomain.prefix);
+      expect(await registry.balanceOf(await caller.getAddress())).to.equal(2);
+    });
+
+    it("should return the correct balance after domain is transferred", async () => {
+      await registry.transferFrom(
+        await caller.getAddress(),
+        await recipient.getAddress(),
+        privateDomain.id
+      );
+      expect(await registry.balanceOf(await caller.getAddress())).to.equal(0);
+      expect(await registry.balanceOf(await recipient.getAddress())).to.equal(
+        1
+      );
+    });
+  });
 });
