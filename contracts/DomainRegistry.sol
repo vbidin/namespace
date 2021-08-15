@@ -195,7 +195,10 @@ contract DomainRegistry is IDomainRegistry {
         returns (address)
     {
         Domain storage domain = domains[domainId];
+
         if (!domain.isCreated()) revert DomainDoesNotExist();
+        if (domain.isPublic()) revert DomainIsPublic();
+
         return domain.approved;
     }
 
