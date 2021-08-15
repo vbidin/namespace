@@ -637,4 +637,55 @@ describe(Contracts.DomainRegistry, () => {
       );
     });
   });
+
+  describe("getApproved", async () => {
+    beforeEach(async () => {
+      await registry.create(rootDomain.id, publicDomain.prefix);
+      await registry.create(publicDomain.id, privateDomain.prefix);
+    });
+
+    it("should revert if the domain does not exist", async () => {
+      await expect(registry.getApproved(missingDomain.id)).to.be.revertedWith(
+        Errors.DomainDoesNotExist
+      );
+    });
+
+    it("should revert if the domain is a public domain", async () => {
+      const domains = [rootDomain, publicDomain];
+      for (const domain of domains) {
+        await expect(registry.getApproved(domain.id)).to.be.revertedWith(
+          Errors.DomainIsPublic
+        );
+      }
+    });
+
+    it("should return the zero address", async () => {
+      expect(await registry.getApproved(privateDomain.id)).to.equal(
+        constants.AddressZero
+      );
+    });
+
+    it("should return the approved address", async () => {
+      await registry.approve(await approved.getAddress(), privateDomain.id);
+      expect(await registry.getApproved(privateDomain.id)).to.equal(
+        await approved.getAddress()
+      );
+    });
+
+    it("should return the zero address after domain is transferred", async () => {
+      expect(
+        await registry.approve(await approved.getAddress(), privateDomain.id)
+      );
+      await registry
+        .connect(approved)
+        .transferFrom(
+          await caller.getAddress(),
+          await recipient.getAddress(),
+          privateDomain.id
+        );
+      expect(await registry.getApproved(privateDomain.id)).to.equal(
+        constants.AddressZero
+      );
+    });
+  });
 });
