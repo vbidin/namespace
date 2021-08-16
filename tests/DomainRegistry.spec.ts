@@ -688,4 +688,69 @@ describe(Contracts.DomainRegistry, () => {
       );
     });
   });
+
+  describe("isApprovedForAll", async () => {
+    it("should revert if the owner is the zero address", async () => {
+      await expect(
+        registry.isApprovedForAll(
+          constants.AddressZero,
+          await operator.getAddress()
+        )
+      ).to.be.revertedWith(Errors.AddressIsZero);
+    });
+
+    it("should revert if the operator is the zero address", async () => {
+      await expect(
+        registry.isApprovedForAll(
+          await owner.getAddress(),
+          constants.AddressZero
+        )
+      ).to.be.revertedWith(Errors.AddressIsZero);
+    });
+
+    it("should revert if the owner and operator are identical", async () => {
+      await expect(
+        registry.isApprovedForAll(
+          await owner.getAddress(),
+          await owner.getAddress()
+        )
+      ).to.be.revertedWith(Errors.AddressesAreIdentical);
+    });
+
+    it("should return false if the operator was never authorized by the owner", async () => {
+      expect(
+        await registry.isApprovedForAll(
+          await owner.getAddress(),
+          await operator.getAddress()
+        )
+      ).to.be.false;
+    });
+
+    it("should return true if the operator is authorized by the owner", async () => {
+      await registry
+        .connect(owner)
+        .setApprovalForAll(await operator.getAddress(), true);
+      expect(
+        await registry.isApprovedForAll(
+          await owner.getAddress(),
+          await operator.getAddress()
+        )
+      ).to.be.true;
+    });
+
+    it("should return correct value after operator status is changed", async () => {
+      const values = [true, false, true];
+      for (const value of values) {
+        await registry
+          .connect(owner)
+          .setApprovalForAll(await operator.getAddress(), value);
+        expect(
+          await registry.isApprovedForAll(
+            await owner.getAddress(),
+            await operator.getAddress()
+          )
+        ).to.equal(value);
+      }
+    });
+  });
 });
