@@ -6,6 +6,19 @@ import { Contracts } from "../scripts/enums/contracts";
 import { Events } from "../scripts/enums/events";
 import { Errors } from "../scripts/enums/errors";
 import { ConstructorArguments } from "../scripts/deployment/options";
+import { createPublicDomain, createDomain } from "./shared/utility";
+import {
+  anotherPrivateDomain,
+  extremelyLongPrefix,
+  longPrefix,
+  missingDomain,
+  numberOfLevels,
+  prefix,
+  prefixWithPeriods,
+  privateDomain,
+  publicDomain,
+  rootDomain,
+} from "./shared/data";
 
 describe(Contracts.DomainRegistry, () => {
   let caller: Signer; // default signer
@@ -19,22 +32,6 @@ describe(Contracts.DomainRegistry, () => {
   let factory: ContractFactory;
   let args: any;
   let registry: DomainRegistry;
-
-  const prefix = "org";
-  const prefixWithPeriods = "memereum.org";
-  const longPrefix = "a".repeat(100);
-  const extremelyLongPrefix = "a".repeat(10000);
-  const numberOfLevels = 100;
-
-  const rootDomain = { id: 0, name: "" };
-  const publicDomain = { id: 1, name: "org", prefix: "org" };
-  const privateDomain = { id: 2, name: "ethereum.org", prefix: "ethereum" };
-  const anotherPrivateDomain = {
-    id: 3,
-    prefix: "app",
-    name: "app.ethereum.org",
-  };
-  const missingDomain = { id: 1337, name: "meme.coins" };
 
   beforeEach(async () => {
     [caller, owner, claimer, recipient, approved, operator, other] =
@@ -102,13 +99,12 @@ describe(Contracts.DomainRegistry, () => {
       );
     });
 
+    // should revert when the prefix is illegal in general
     it("should revert when the prefix contains periods", async () => {
       await expect(
         registry.create(rootDomain.id, prefixWithPeriods)
       ).to.be.revertedWith(Errors.StringContainsPeriods);
     });
-
-    // should revert when the prefix is illegal in general
 
     it("should revert when the created domain already exists", async () => {
       await registry.create(rootDomain.id, prefix);
