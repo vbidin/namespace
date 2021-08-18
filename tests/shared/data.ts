@@ -17,3 +17,21 @@ export const anotherPrivateDomain = {
   name: "app.ethereum.org",
 };
 export const missingDomain = { id: 1337, name: "meme.coins" };
+
+export const erc20InterfaceId = "0x36372b07";
+export const erc165InterfaceId = "0x01ffc9a7";
+export const erc721InterfaceId = "0x80ac58cd";
+export const erc777InterfaceId = "0xe58e113c";
+export const domainRegistryInterfaceId = "0xf039401f";
+export const unknownInterfaceId = "0x12345678";
+
+export const supportedInterfaceIds = [
+  erc165InterfaceId,
+  erc721InterfaceId,
+  domainRegistryInterfaceId,
+];
+export const unsupportedInterfaceIds = [
+  erc20InterfaceId,
+  erc777InterfaceId,
+  unknownInterfaceId,
+];

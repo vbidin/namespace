@@ -18,6 +18,8 @@ import {
   privateDomain,
   publicDomain,
   rootDomain,
+  supportedInterfaceIds,
+  unsupportedInterfaceIds,
 } from "./shared/data";
 
 describe(Contracts.DomainRegistry, () => {
@@ -746,6 +748,20 @@ describe(Contracts.DomainRegistry, () => {
             await operator.getAddress()
           )
         ).to.equal(value);
+      }
+    });
+  });
+
+  describe("supportsInterface", async () => {
+    it("should return true when interfaceId is supported", async () => {
+      for (const interfaceId of supportedInterfaceIds) {
+        expect(await registry.supportsInterface(interfaceId)).to.equal(true);
+      }
+    });
+
+    it("should return false when interfaceId is not supported", async () => {
+      for (const interfaceId of unsupportedInterfaceIds) {
+        expect(await registry.supportsInterface(interfaceId)).to.equal(false);
       }
     });
   });
