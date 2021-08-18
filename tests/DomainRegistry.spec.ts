@@ -6,7 +6,6 @@ import { Contracts } from "../scripts/enums/contracts";
 import { Events } from "../scripts/enums/events";
 import { Errors } from "../scripts/enums/errors";
 import { ConstructorArguments } from "../scripts/deployment/options";
-import { createPublicDomain, createDomain } from "./shared/utility";
 import {
   anotherPrivateDomain,
   extremelyLongPrefix,
