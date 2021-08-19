@@ -22,7 +22,7 @@ export const erc20InterfaceId = "0x36372b07";
 export const erc165InterfaceId = "0x01ffc9a7";
 export const erc721InterfaceId = "0x80ac58cd";
 export const erc777InterfaceId = "0xe58e113c";
-export const domainRegistryInterfaceId = "0xf039401f";
+export const domainRegistryInterfaceId = "0xc7848984";
 export const unknownInterfaceId = "0x12345678";
 
 export const supportedInterfaceIds = [
