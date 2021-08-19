@@ -91,6 +91,16 @@ contract DomainRegistry is IDomainRegistry {
         _refreshDomain(domainId);
     }
 
+    function release(uint256 domainId) external override {
+        Domain storage domain = domains[domainId];
+
+        if (!domain.isCreated()) revert DomainDoesNotExist();
+        if (domain.isPublic()) revert DomainIsPublic();
+        if (!domain.isOwnedBy(msg.sender)) revert DomainIsNotOwnedByCaller();
+
+        _transferDomain(msg.sender, address(0), domainId);
+    }
+
     /// @inheritdoc IERC721
     function transferFrom(
         address sender,

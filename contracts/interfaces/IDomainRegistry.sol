@@ -17,12 +17,12 @@ interface IDomainRegistry is IERC721 {
     /// Emits a {Transfer} event.
     /// Throws an exception if:
     /// - `parentDomainId` domain does not exist.
-    /// - `parentDomainId` domain is not public and `msg.sender` does not own it.
+    /// - `parentDomainId` domain is not public and the caller does not own it.
     /// - `prefix` is an empty string.
     /// - `prefix` contains a period.
-    /// -  the child domain already exists.
+    /// - the child domain already exists.
     /// @param parentDomainId The domain identifier.
-    /// @param prefix The string to concatenate to the domain.
+    /// @param prefix The string to concatenate to the front of the parent domain.
     /// @return childDomainId The domain identifier of the newly created domain.
     function create(uint256 parentDomainId, string calldata prefix)
         external
@@ -33,7 +33,7 @@ interface IDomainRegistry is IERC721 {
     /// Throws an exception if:
     /// - `domainId` domain does not exist.
     /// - `domainId` domain is public.
-    /// - `domainId` domain is already owned by `msg.sender`.
+    /// - `domainId` domain is already owned by the caller.
     /// - `domainId` domain has not expired.
     /// @param domainId The domain identifier.
     function claim(uint256 domainId) external;
@@ -42,9 +42,17 @@ interface IDomainRegistry is IERC721 {
     /// @dev Throws an exception if:
     /// - `domainId` domain does not exist.
     /// - `domainId` domain is public.
-    /// - `domainId` domain is not owned by `msg.sender`.
+    /// - `domainId` domain is not owned by the caller.
     /// @param domainId The domain identifier.
     function refresh(uint256 domainId) external;
+
+    /// @notice Converts `domainId` into a public domain.
+    /// @dev This operation is not reversible.
+    /// Throws an exception if:
+    /// - `domainId` does not exist.
+    /// - `domainId` is public.
+    /// - `domainId` is not owned by the caller.
+    function release(uint256 domainId) external;
 
     /// @notice Returns the symbolic name of the `domainId` domain.
     /// @dev Throws an exception if the `domainId` domain has not been registered.
