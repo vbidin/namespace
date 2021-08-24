@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./structs/RecordStorageOptions.sol";
+import "./interfaces/IRecordStorage.sol";
 
-contract RecordStorage {
+contract RecordStorage is IRecordStorage {
     IDomainRegistry internal _domainRegistry;
 
     constructor(RecordStorageOptions memory options) {
