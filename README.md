@@ -22,16 +22,19 @@ pip install -r configurations/requirements.txt
 ## Usage
 
 Format and run all linters:
+
 ```
 yarn lint
 ```
 
 Compile solidity contracts:
+
 ```
 yarn build
 ```
 
 Run unit tests:
+
 ```
 yarn test:unit
 ```
@@ -43,11 +46,13 @@ In order to deploy the contracts and run integration tests you will need to setu
 - ETHERSCAN_API_KEY: Register an [Etherscan](https://etherscan.io/) account and create a new API KEY.
 
 Deploy contracts:
+
 ```
 yarn deploy --network <name>
 ```
 
 Run integration tests:
+
 ```
 yarn test:integration --network <name>
 ```
@@ -55,16 +60,19 @@ yarn test:integration --network <name>
 Use the following commands for running advanced security scans:
 
 Run static analysis:
+
 ```
 yarn scan:slither
 ```
 
 Run symbolic execution:
+
 ```
 WIP
 ```
 
 Run fuzz tests:
+
 ```
 WIP
 ```
