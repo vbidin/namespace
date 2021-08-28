@@ -57,14 +57,6 @@ Run integration tests:
 yarn test:integration --network <name>
 ```
 
-Use these commands to run security scans:
-
-Run static analysis:
-
-```
-yarn scan:slither
-```
-
 ## Security
 
 WIP
