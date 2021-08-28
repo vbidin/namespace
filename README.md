@@ -57,24 +57,12 @@ Run integration tests:
 yarn test:integration --network <name>
 ```
 
-Use the following commands for running advanced security scans:
+Use these commands to run security scans:
 
 Run static analysis:
 
 ```
 yarn scan:slither
-```
-
-Run symbolic execution:
-
-```
-WIP
-```
-
-Run fuzz tests:
-
-```
-WIP
 ```
 
 ## Security
