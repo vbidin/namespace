@@ -59,7 +59,22 @@ yarn test:integration --network <name>
 
 ## Security
 
-WIP
+Run Slither:
+
+```
+yarn scan:slither
+```
+
+Run Manticore:
+
+```
+TODO
+```
+
+Run Echidna:
+```
+TODO
+```
 
 ## Documentation
 
