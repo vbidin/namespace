@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-/// @title Interface of a contract that can receive ERC-721 tokens
+/// @title Interface of a contract that can receive ERC-721 tokens.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 interface IERC721Receiver {
     /// @notice

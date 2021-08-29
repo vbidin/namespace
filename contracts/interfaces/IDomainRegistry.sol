@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./IERC721.sol";
 
-/// @title Interface of a registry of domain ownerships
+/// @title Interface of a registry of domain ownerships.
 /// @notice Complies with the ERC-721 Non-Fungible Token Standard.
 interface IDomainRegistry is IERC721 {
     /// @notice

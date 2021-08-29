@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/// @title Interface of the ERC-20 standard
+/// @title Interface of the ERC-20 standard.
 /// @dev See https://eips.ethereum.org/EIPS/eip-20
 interface IERC20 {
     /// @notice
