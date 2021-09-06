@@ -8,7 +8,7 @@
     "avoid-throw": "error",
     "avoid-tx-origin": "error",
     "check-send-result": "error",
-    "code-complexity": ["warn", 5],
+    "code-complexity": ["warn", 10],
     "compiler-version": ["error", "^0.8.0"],
     "comprehensive-interface": "warn",
     "const-name-snakecase": "error",
