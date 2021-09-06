@@ -10,7 +10,7 @@ async function main() {
 
   const domainId = await domainRegistry.idOf("ethereum.org");
   const owner = await domainRegistry.ownerOf(domainId);
-  const balance = await domainRegistry.balanceOf(owner);
+  await domainRegistry.balanceOf(owner);
 }
 
 main()

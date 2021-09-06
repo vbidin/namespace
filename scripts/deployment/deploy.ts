@@ -50,7 +50,7 @@ async function deployAndVerifyContracts(
     );
     contractAddresses.set(contractName, contract.address);
     updateConstructorArguments(contracts, contractName, contract.address);
-    await verifyContract(contract.address, contracts.get(contractName)!);
+    await verifyContract();
   }
   return contractAddresses;
 }
@@ -92,10 +92,7 @@ function updateConstructorArguments(
   }
 }
 
-async function verifyContract(
-  contractAddress: string,
-  constructorArguments: any[]
-) {
+async function verifyContract() {
   console.log("skipping contract verification");
 }
 
