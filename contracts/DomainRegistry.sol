@@ -8,7 +8,7 @@ import "./libraries/DomainLibrary.sol";
 
 import "./structs/Domain.sol";
 import "./structs/DomainOwner.sol";
-import "./structs/DomainRegistryOptions.sol";
+import "./structs/settings/DomainRegistrySettings.sol";
 
 import "./errors/ValidationErrors.sol";
 import "./errors/DomainErrors.sol";
@@ -30,8 +30,8 @@ contract DomainRegistry is IDomainRegistry {
 
     mapping(address => DomainOwner) internal owners;
 
-    constructor(DomainRegistryOptions memory options) {
-        DOMAIN_DURATION = options.domainDuration;
+    constructor(DomainRegistrySettings memory settings) {
+        DOMAIN_DURATION = settings.domainDuration;
 
         Domain storage domain = domains[0];
         DomainOwner storage owner = owners[address(0)];
