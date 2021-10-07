@@ -13,7 +13,7 @@ import "./structs/settings/DomainRegistrySettings.sol";
 import "./errors/ValidationErrors.sol";
 import "./errors/DomainErrors.sol";
 
-/// @title Implementation of a registry of domain ownerships
+/// @title Implementation of a registry of domain ownerships.
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract DomainRegistry is IDomainRegistry {
     using UtilityLibrary for *;
