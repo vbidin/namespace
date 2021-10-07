@@ -8,7 +8,7 @@ import "./structs/settings/RecordStorageSettings.sol";
 /// @title Implementation of a storage of domain records.
 /// @notice Implements the ERC-721 Non-Fungible Token Standard.
 contract RecordStorage is IRecordStorage {
-    IDomainRegistry internal domainRegistry;
+    IDomainRegistry internal immutable domainRegistry;
 
     constructor(RecordStorageSettings memory settings) {
         domainRegistry = settings.domainRegistry;
