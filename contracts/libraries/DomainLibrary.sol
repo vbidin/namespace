@@ -9,8 +9,6 @@ library DomainLibrary {
     using UtilityLibrary for *;
     using DomainLibrary for *;
 
-    bytes1 internal constant SEPARATOR = ".";
-
     function create(
         Domain storage domain,
         uint256 id,
@@ -123,21 +121,11 @@ library DomainLibrary {
 
     function generateSubdomainName(
         Domain storage domain,
-        string calldata prefix
+        string calldata prefix,
+        bytes1 separator
     ) internal view returns (string memory name) {
         name = domain.isRoot()
-            ? string(abi.encodePacked(prefix, domain.name))
-            : string(abi.encodePacked(prefix, SEPARATOR, domain.name));
-    }
-
-    function isValidPrefix(string calldata prefix)
-        internal
-        pure
-        returns (bool)
-    {
-        bytes calldata array = bytes(prefix);
-        for (uint256 i = 0; i < array.length; i++)
-            if (array[i] == SEPARATOR) return true;
-        return false;
+            ? prefix
+            : string(abi.encodePacked(prefix, separator, domain.name));
     }
 }

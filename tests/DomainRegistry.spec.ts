@@ -104,7 +104,7 @@ describe(Contracts.DomainRegistry, () => {
     it("should revert when the prefix contains periods", async () => {
       await expect(
         registry.create(rootDomain.id, prefixWithPeriods)
-      ).to.be.revertedWith(Errors.StringContainsPeriods);
+      ).to.be.revertedWith(Errors.StringIsInvalid);
     });
 
     it("should revert when the created domain already exists", async () => {

@@ -19,18 +19,17 @@ contract DomainRegistry is IDomainRegistry {
     using UtilityLibrary for *;
     using DomainLibrary for *;
 
-    // replace with protocol parameters
-    uint256 internal immutable DOMAIN_DURATION;
+    bytes1 internal immutable DOMAIN_SEPARATOR;
+    uint256 internal immutable DOMAIN_DURATION; // replace with protocol parameters
+
+    mapping(string => uint256) internal domainIds;
+    mapping(uint256 => Domain) internal domains;
+    mapping(address => DomainOwner) internal owners;
 
     uint256 internal nextDomainId;
 
-    mapping(string => uint256) internal domainIds;
-
-    mapping(uint256 => Domain) internal domains;
-
-    mapping(address => DomainOwner) internal owners;
-
     constructor(DomainRegistrySettings memory settings) {
+        DOMAIN_SEPARATOR = settings.domainSeparator;
         DOMAIN_DURATION = settings.domainDuration;
 
         Domain storage domain = domains[0];
@@ -55,7 +54,8 @@ contract DomainRegistry is IDomainRegistry {
         if (!owner.canCreateSubdomain(domain))
             revert DomainIsNotOwnedByCaller();
         if (prefix.isEmpty()) revert StringIsEmpty();
-        if (prefix.isValidPrefix()) revert StringContainsPeriods();
+        if (prefix.containsCharacter(DOMAIN_SEPARATOR))
+            revert StringIsInvalid();
 
         childDomainId = nextDomainId++;
         _createSubdomain(parentDomainId, childDomainId, prefix);
@@ -256,8 +256,11 @@ contract DomainRegistry is IDomainRegistry {
         Domain storage parentDomain = domains[parentDomainId];
         Domain storage childDomain = domains[childDomainId];
         DomainOwner storage owner = owners[address(0)];
-        string memory name = parentDomain.generateSubdomainName(prefix);
 
+        string memory name = parentDomain.generateSubdomainName(
+            prefix,
+            DOMAIN_SEPARATOR
+        );
         childDomain.create(childDomainId, name, owner);
 
         if (domainIds[name] != 0) revert DomainAlreadyExists();

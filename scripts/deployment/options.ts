@@ -15,6 +15,9 @@ export const Libraries: string[] = [];
   and will be replaced with deployment addresses during deployment.
 */
 export const ConstructorArguments: Map<string, any> = new Map([
-  [Contracts.DomainRegistry, { domainDuration: 31536000 }],
+  [
+    Contracts.DomainRegistry,
+    { domainSeparator: 0x2e, domainDuration: 31536000 },
+  ],
   [Contracts.RecordStorage, { domainRegistry: Contracts.DomainRegistry }],
 ]);

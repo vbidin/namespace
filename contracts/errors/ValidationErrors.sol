@@ -7,4 +7,4 @@ error AddressesAreIdentical();
 
 error StringIsEmpty();
 
-error StringContainsPeriods();
+error StringIsInvalid();

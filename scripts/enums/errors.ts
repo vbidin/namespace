@@ -3,7 +3,7 @@ export enum Errors {
   AddressesAreIdentical = "AddressesAreIdentical",
 
   StringIsEmpty = "StringIsEmpty",
-  StringContainsPeriods = "StringContainsPeriods",
+  StringIsInvalid = "StringIsInvalid",
 
   DomainDoesNotExist = "DomainDoesNotExist",
   DomainAlreadyExists = "DomainAlreadyExists",
