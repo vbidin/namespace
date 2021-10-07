@@ -2,9 +2,7 @@ import { ethers } from "hardhat";
 import { constants, ContractFactory, Signer } from "ethers";
 import { expect } from "chai";
 import { DomainRegistry } from "../artifacts/types/DomainRegistry";
-import { Contracts } from "../scripts/enums/contracts";
-import { Events } from "../scripts/enums/events";
-import { Errors } from "../scripts/enums/errors";
+import { Contracts, Events, Errors } from "../scripts/enums";
 import { ConstructorArguments } from "../scripts/deployment/options";
 import {
   anotherPrivateDomain,

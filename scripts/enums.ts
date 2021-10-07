@@ -1,3 +1,17 @@
+export enum Contracts {
+  DomainRegistry = "DomainRegistry",
+  RecordStorage = "RecordStorage",
+}
+
+export enum Libraries {}
+
+export enum Events {
+  Transfer = "Transfer",
+  Refresh = "Refresh",
+  Approval = "Approval",
+  ApprovalForAll = "ApprovalForAll",
+}
+
 export enum Errors {
   AddressIsZero = "AddressIsZero",
   AddressesAreIdentical = "AddressesAreIdentical",

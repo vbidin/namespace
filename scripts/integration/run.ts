@@ -1,5 +1,5 @@
 import { getContract } from "./utility";
-import { Contracts } from "../enums/contracts";
+import { Contracts } from "../enums";
 
 async function main() {
   const options = { gasLimit: 1000000 };

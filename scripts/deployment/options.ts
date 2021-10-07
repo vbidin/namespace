@@ -1,5 +1,5 @@
 import hre from "hardhat";
-import { Contracts } from "../enums/contracts";
+import { Contracts } from "../enums";
 
 // The file where addresses of deployed contracts are stored during deployment.
 export const DeploymentOutputFile =
