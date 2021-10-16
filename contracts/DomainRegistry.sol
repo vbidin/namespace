@@ -18,6 +18,7 @@ import "./errors/DomainErrors.sol";
 contract DomainRegistry is IDomainRegistry {
     using UtilityLibrary for *;
     using DomainLibrary for *;
+    using DomainOwnerLibrary for *;
 
     bytes1 internal immutable DOMAIN_SEPARATOR;
     uint256 internal immutable DOMAIN_DURATION; // replace with protocol parameters

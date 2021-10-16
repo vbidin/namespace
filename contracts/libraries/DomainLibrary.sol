@@ -2,12 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "./UtilityLibrary.sol";
+import "./DomainOwnerLibrary.sol";
+
 import "../structs/Domain.sol";
 import "../structs/DomainOwner.sol";
 
 library DomainLibrary {
     using UtilityLibrary for *;
     using DomainLibrary for *;
+    using DomainOwnerLibrary for *;
 
     function create(
         Domain storage domain,
@@ -20,11 +23,6 @@ library DomainLibrary {
         domain.name = name;
         domain.owner = owner.id;
         owner.numberOfDomains += 1;
-    }
-
-    function create(DomainOwner storage owner, address id) internal {
-        owner.exists = true;
-        owner.id = id;
     }
 
     function transfer(
@@ -47,10 +45,6 @@ library DomainLibrary {
 
     function isCreated(Domain storage domain) internal view returns (bool) {
         return domain.exists;
-    }
-
-    function isCreated(DomainOwner storage owner) internal view returns (bool) {
-        return owner.exists;
     }
 
     function isRoot(Domain storage domain) internal view returns (bool) {
@@ -83,14 +77,6 @@ library DomainLibrary {
         returns (bool)
     {
         return block.timestamp - domain.timestamp > timespan;
-    }
-
-    function hasAuthorized(DomainOwner storage owner, address a)
-        internal
-        view
-        returns (bool)
-    {
-        return owner.operators[a];
     }
 
     function canApprove(
