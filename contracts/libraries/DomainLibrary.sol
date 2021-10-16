@@ -98,13 +98,6 @@ library DomainLibrary {
             owner.hasAuthorized(caller);
     }
 
-    function canCreateSubdomain(
-        DomainOwner storage owner,
-        Domain storage domain
-    ) internal view returns (bool) {
-        return domain.isPublic() || domain.isOwnedBy(owner.id);
-    }
-
     function generateSubdomainName(
         Domain storage domain,
         string calldata prefix,
