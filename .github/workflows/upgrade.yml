@@ -1,8 +1,7 @@
 name: Upgrade
 
 on:
-  schedule:
-    - cron: 0 5 31 2 *
+  workflow_dispatch:
 
 jobs:
   upgrade:
