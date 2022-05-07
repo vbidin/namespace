@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 14
       - run: yarn install --frozen-lockfile
       - run: yarn format:check
       - run: yarn lint:solhint
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 14
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn test:unit # include code coverage
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 14
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn deploy --network ropsten
@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.PEEWEE_TOKEN }}
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 14
           registry-url: https://registry.npmjs.org
       - run: yarn install --frozen-lockfile
       - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
