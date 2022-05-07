@@ -61,21 +61,21 @@ jobs:
   #     ETHEREUM_PRIVATE_KEY: ${{ secrets.ETHEREUM_PRIVATE_KEY }}
   #     ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
 
-  publish:
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PEEWEE_TOKEN }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org
-      - run: yarn install --frozen-lockfile
-      - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
-      - run: yarn version --patch --message "Increment patch version [skip ci]"
-      - run: git push --follow-tags
-      - run: yarn publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.PEEWEE_TOKEN }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 14
+  #         registry-url: https://registry.npmjs.org
+  #     - run: yarn install --frozen-lockfile
+  #     - run: git config --global user.email mr@pee.wee && git config --global user.name peewee
+  #     - run: yarn version --patch --message "Increment patch version [skip ci]"
+  #     - run: git push --follow-tags
+  #     - run: yarn publish
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
