@@ -56,11 +56,3 @@ Run integration tests:
 ```
 yarn test:integration --network <name>
 ```
-
-## Security
-
-WIP
-
-## Documentation
-
-WIP
