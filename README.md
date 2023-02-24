@@ -1,4 +1,4 @@
-# Namespace - Smart Contracts
+# Namespace
 
 [![ci](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/vbidin/namespace-contracts/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@namespace-domains/contracts/latest.svg)](https://www.npmjs.com/package/@namespace-domains/contracts/v/latest)
